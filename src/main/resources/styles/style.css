@@ -1,0 +1,58 @@
+/* O .root afeta o fundo de toda a janela */
+.root {
+    -fx-background-color: #F8F5F2; /* Um tom creme muito suave */
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+}
+
+/* O .button afeta TODOS os botões do sistema automaticamente! */
+.button {
+    -fx-background-color: #8B0000; /* Vermelho escuro (Dark Red) */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 5px; /* Bordas arredondadas */
+    -fx-cursor: hand; /* Muda o rato para a "mãozinha" ao passar por cima */
+}
+
+/* O :hover cria a animação de quando passamos o rato por cima do botão */
+.button:hover {
+    -fx-background-color: #B22222; /* Fica um vermelho mais claro e vivo */
+}
+
+/* Afeta os textos normais (como o "Número da Mesa") */
+.label {
+    -fx-font-size: 15px;
+    -fx-text-fill: #333333;
+    -fx-font-weight: bold;
+}
+
+/* Dá um estilo moderno às caixinhas de texto */
+.text-field, .combo-box {
+    -fx-background-radius: 4px;
+    -fx-border-color: #CCCCCC;
+    -fx-border-radius: 4px;
+    -fx-padding: 5px;
+}
+
+.header {
+    -fx-padding-bottom: 10px;
+    
+}
+.titulo{
+    -fx-font-size: 30px; 
+    -fx-font-weight: bold; 
+    -fx-text-fill: darkred;
+}
+
+.subtitulo{
+    -fx-font-size: 20px;  
+    -fx-text-fill: darkred;
+}
+.btn_salvar{
+    -fx-padding-bottom: 20px;
+}
+.naoEditavel{
+    -fx-background-color: #e0e0e0;
+     -fx-text-fill: #555555;
+}
