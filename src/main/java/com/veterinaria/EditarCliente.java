@@ -4,24 +4,32 @@ package com.veterinaria;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
+import javafx.scene.control.Accordion;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.util.StringConverter;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 public class EditarCliente {
@@ -52,6 +60,34 @@ public class EditarCliente {
         header.getChildren().addAll(visulogoCadastro, lblTituloCadastro);
         header.getStyleClass().add("header");
         //fimHeader
+
+        //header1
+        Image logo1 = new Image(Login.class.getResource("/imagens/pet.png").toExternalForm());
+        ImageView mostarLogo1 = new ImageView(logo1);
+        mostarLogo1.setFitHeight(60);
+        mostarLogo1.setPreserveRatio(true);
+
+        Label lblTitulo1 = new Label("Lista de Agendas do Cliente: " + c1.getNome());
+        lblTitulo1.getStyleClass().add("titulo");
+
+
+        HBox linhaHeader1 = new HBox(20);
+        linhaHeader1.setPadding(new Insets(30, 40, 40, 40)); 
+        linhaHeader1.setAlignment(Pos.CENTER);
+        linhaHeader1.getChildren().addAll(mostarLogo1, lblTitulo1);
+
+        //header2
+        Image logo2 = new Image(Login.class.getResource("/imagens/pet.png").toExternalForm());
+        ImageView mostarLogo2 = new ImageView(logo2);
+        mostarLogo2.setFitHeight(60);
+        mostarLogo2.setPreserveRatio(true);
+        Label lblTitulo2 = new Label("Lista de Pets do Cliente: " + c1.getNome());
+        lblTitulo2.getStyleClass().add("titulo");
+        HBox linhaHeader2 = new HBox(20);
+        linhaHeader2.setPadding(new Insets(30, 40, 40, 40));
+        linhaHeader2.setAlignment(Pos.CENTER);
+        linhaHeader2.getChildren().addAll(mostarLogo2, lblTitulo2);
+
 
         GridPane gridDados = new GridPane();
         gridDados.setHgap(10);
@@ -377,12 +413,77 @@ public class EditarCliente {
         Label lblPet = new Label("Pets Cadastrados");
         lblPet.getStyleClass().add("subtitulo");
         GridPane.setHalignment(lblPet, javafx.geometry.HPos.CENTER);
-        gridPets.add(lblPet, 0, 0);
+        gridPets.add(lblPet, 0, 0, 2, 1);
 
-        for(Pet pet : c1.getPet()){
-            int num = c1.getPet().indexOf(pet) + 1;
-            gridPets.add(new Label("Pet " + num + ": " + pet.getNome()), 0, num);
+        //fazer uma sanfona de pets do cliente
+            Accordion sanfonaPets = new Accordion();
+        sanfonaPets.setMaxWidth(500);
+
+        // 1. Limpa a sanfona velha
+        sanfonaPets.getPanes().clear(); 
+
+        // 2. ORDENA a lista de pets EM ORDEM ALFABÉTICA!
+        c1.getPet().sort(Comparator.comparing(Pet::getNome, String.CASE_INSENSITIVE_ORDER));
+
+    // 2. Passa por cada pet no banco de dados
+    for (Pet pet : c1.getPet()) {
+        // 3. Cria a "caixa" (VBox) que vai ficar ESCONDIDA dentro da sanfona
+        VBox detalhes = new VBox(5); 
+        
+        // Adiciona um título pros Pets com a numeração
+        Label tituloPets = new Label("\n🐾 Pets " + (c1.getPet().indexOf(pet) + 1));
+        tituloPets.setStyle("-fx-font-weight: bold;"); // Deixa negrito
+        detalhes.getChildren().add(tituloPets);
+        
+        // Lista os pets dentro dessa mesma caixa
+        if (c1.getPet().isEmpty()) {
+            detalhes.getChildren().add(new Label("Nenhum pet cadastrado."));
+        } else {
+            //exibe os dados do pet
+            detalhes.getChildren().add(new Label(pet.exibePet()));
         }
+
+        // 4. Cria a "Barra" (TitledPane) que fica visível, colocando a VBox dentro dela!
+        TitledPane painelCliente = new TitledPane(pet.getNome(), detalhes);
+        painelCliente.setMaxHeight(25);
+
+        // 5. Adiciona essa barra na sanfona principal
+        sanfonaPets.getPanes().add(painelCliente);
+
+        
+
+        
+    }
+    ScrollPane rolagem = new ScrollPane();
+        rolagem.setContent(sanfonaPets);
+        rolagem.setFitToWidth(true);
+        rolagem.addEventFilter(ScrollEvent.SCROLL, evento -> {
+    
+    // 1. Defina a sua velocidade aqui (Quanto maior, mais rápido). 
+    // O valor 0.003 costuma ser excelente, mas você pode testar 0.005, 0.01, etc.
+    double velocidade = 0.005; 
+    
+    // 2. Pega a força que o usuário girou a rodinha e multiplica pela sua velocidade
+    double movimento = evento.getDeltaY() * velocidade;
+    
+    // 3. Pega a posição atual da barra de rolagem (Vvalue) e subtrai o movimento
+    rolagem.setVvalue(rolagem.getVvalue() - movimento);
+    
+    // 4. A mágica: "Mata" o evento padrão do JavaFX para impedir que ele role super devagar junto com o nosso
+    evento.consume(); 
+});
+        rolagem.setMaxWidth(500);
+        VBox coluna = new VBox(25);
+        coluna.getChildren().addAll(rolagem);
+        coluna.setPadding(new Insets(30, 20, 20, 20));
+        coluna.setAlignment(Pos.CENTER);
+        VBox.setVgrow(rolagem,  Priority.ALWAYS);
+        VBox.setVgrow(sanfonaPets,  Priority.ALWAYS);
+
+        //adicionar a sanfona na grid
+        gridPets.add(coluna, 0, 1, 2, 1);
+        GridPane.setVgrow(coluna, Priority.ALWAYS); 
+
 
         Button btnCadastrar = new Button("Novo Pet");
 
@@ -393,7 +494,7 @@ public class EditarCliente {
         gridPets.add(btnRemover, 1, gridPets.getRowCount() - 1);
         
         HBox cadastro = new HBox(100);
-        cadastro.getChildren().addAll(gridDados, gridEndereco, gridPets);
+        cadastro.getChildren().addAll(gridDados, gridEndereco);
 
 
         Arrays.asList(header, cadastro).forEach(linha -> linha.setAlignment(Pos.CENTER));
@@ -523,9 +624,43 @@ public class EditarCliente {
         //Arrays.asList(txtBairro, txtCep, txtDdd, txtEmail, txtNumero, txtTelefone).forEach(e -> e.);
         Arrays.asList(txtCpf, dpIdade, txtNome).forEach(e -> e.setDisable(true));
         Arrays.asList(txtCpf, dpIdade, txtNome).forEach(e -> e.getStyleClass().add("naoEditavel"));
+
+        VBox colunaAgendas = new VBox(15);
+        colunaAgendas.getChildren().addAll(linhaHeader1, Agendamentos.criarCena());
+
+        HBox linhaGridPets = new HBox(10);
+        linhaGridPets.getChildren().addAll(gridPets);  
+        linhaGridPets.setAlignment(Pos.CENTER);
+
+        VBox colunaPets = new VBox(15);
+        colunaPets.getChildren().addAll(linhaHeader2, linhaGridPets);
+        colunaPets.setAlignment(Pos.TOP_CENTER);
+
+        TabPane painelDeAbas = new TabPane();
+
+        Tab abaEditar = new Tab("Editar Cliente");
+        abaEditar.setClosable(false);
+        
+        abaEditar.setContent(vertical);
+
+        Tab abaListaAgendas = new Tab("Lista de Agendas");
+        abaListaAgendas.setClosable(false);
+
+        abaListaAgendas.setContent(colunaAgendas);
+
+        Tab abaListaPets = new Tab("Lista de Pets");
+        abaListaPets.setClosable(false);
+        abaListaPets.setContent(colunaPets);
+
+        painelDeAbas.getTabs().addAll(abaEditar, abaListaAgendas, abaListaPets);
+
+        VBox verticalHome = new VBox(120);
+        verticalHome.getChildren().addAll(painelDeAbas);
+
+        VBox.setVgrow(painelDeAbas, Priority.ALWAYS);
         
 
-        return vertical;
+        return verticalHome;
     }
 
     public static Cliente pegarDados(List<Pet> p){

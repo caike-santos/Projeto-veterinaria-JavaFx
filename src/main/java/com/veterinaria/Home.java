@@ -132,7 +132,7 @@ public class Home {
         
          Arrays.asList(linhaSubTitulo, linhaBtnBuscar, linhaBuscar, linhaCpf).forEach(linha -> linha.setAlignment(Pos.CENTER));
 
-         TabPane painelDeAbas = new TabPane();
+        TabPane painelDeAbas = new TabPane();
 
         Tab abaBusca = new Tab("Busca de Cliente");
         abaBusca.setClosable(false);
@@ -201,6 +201,7 @@ public class Home {
                          if (resposta == btnSim){
                     
                             App.inserirCena(EditarCliente.criarCena(cliente));
+                            
                          }
                     });
                         

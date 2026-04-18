@@ -1,0 +1,117 @@
+package com.veterinaria;
+
+import java.util.Iterator;
+
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+
+public class RemoverAgenda {
+    public static void abrirJanela(){
+        Stage popup = new Stage();
+        popup.setTitle("Remover Agenda");
+
+        Image logo = new Image(CadastroPet.class.getResource("/imagens/pet.png").toExternalForm());
+        ImageView visulogoCadastro = new ImageView(logo);
+        visulogoCadastro.setFitHeight(60);
+        visulogoCadastro.setPreserveRatio(true);
+
+        Label lblTituloRemover = new Label("Remover Agenda");
+        lblTituloRemover.getStyleClass().add("titulo");
+
+        
+
+        HBox header = new HBox(20);
+        header.getChildren().addAll(visulogoCadastro, lblTituloRemover);
+        header.getStyleClass().add("header");
+        header.setAlignment(Pos.CENTER);
+        //fimHeader
+
+        Label lblData = new Label("Data do agendamento:");
+
+        TextField txtData = new TextField();
+        txtData.setMaxWidth(250);
+
+        Label lblHora = new Label("Hora do agendamento:");
+
+        TextField txtHora = new TextField();
+        txtHora.setMaxWidth(250);
+
+        HBox linhaData = new HBox(15);
+        linhaData.getChildren().addAll(lblData, txtData);
+        linhaData.setAlignment(Pos.CENTER);
+
+        HBox linhaHora = new HBox(15);
+        linhaHora.getChildren().addAll(lblHora, txtHora);
+        linhaHora.setAlignment(Pos.CENTER);
+
+        Button btnRemover = new Button("Remover");
+        HBox linhaBtn = new HBox();
+        linhaBtn.getChildren().add(btnRemover);
+        linhaBtn.setAlignment(Pos.CENTER);
+
+        VBox principal = new VBox(50);
+        principal.getChildren().addAll(header, linhaData, linhaHora, linhaBtn);
+        principal.setAlignment(Pos.CENTER);
+
+        btnRemover.setOnAction(e -> {
+            String data = txtData.getText().trim();
+            String hora = txtHora.getText().trim();
+            if (data.isEmpty() || hora.isEmpty()) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Campo Vazio");
+                alert.setHeaderText(null);
+                alert.setContentText("Por favor, digite a data e a hora do agendamento que deseja remover.");
+                alert.showAndWait();
+                return;
+            }
+            boolean agendaRemovida = false;
+            //procura o agendamento na lista de agendamentos do cliente e remove
+            Iterator<Agenda> agendamento = BancoDeDados.getAgendas().iterator();
+            while(agendamento.hasNext()) {
+                Agenda a = agendamento.next();
+                if(a.getData().toString().equals(data) && a.getHora().toString().equals(hora)) {
+                    agendamento.remove();
+                    agendaRemovida = true;
+                    break;
+                }
+            }
+            
+            
+            if (!agendaRemovida) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Agendamento não encontrado");
+                alert.setHeaderText(null);
+                alert.setContentText("O agendamento digitado não foi encontrado.");
+                alert.showAndWait();
+            } else {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Sucesso");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Agendamento removido com sucesso!");
+                    alert.showAndWait();
+            }
+            popup.close();
+            
+
+
+        });
+
+        String cssGlobal = App.class.getResource("/styles/style.css").toExternalForm();
+            principal.getStylesheets().add(cssGlobal);
+
+        Scene pop = new Scene(principal, 700, 600);
+        popup.setScene(pop);
+        popup.showAndWait();
+
+
+    }
+}
