@@ -116,7 +116,7 @@ public class Agendamentos {
         linhaConteudo.setAlignment(Pos.CENTER);
         
         btnCadastrar.setOnAction(e -> {
-            //abrir um pop-up pra cadastrar um novo agendamento
+            CadastrarAgenda.abrirJanela();
 
         });
         btnEditar.setOnAction(e -> {

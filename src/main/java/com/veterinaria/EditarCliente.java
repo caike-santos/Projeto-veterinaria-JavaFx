@@ -715,6 +715,7 @@ public class EditarCliente {
     public static TextField getTxtDdd() {
         return txtDdd;
     }
+    
 
     public static void mostarNaTela(String header, String texto){
         Alert alerta = new Alert(Alert.AlertType.ERROR);
