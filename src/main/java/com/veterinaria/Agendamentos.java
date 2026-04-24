@@ -98,15 +98,13 @@ public class Agendamentos {
         grid.add(coluna, 0, 1, 3, 1);
         grid.add(btnCadastrar, 0, 2);
         GridPane.setHalignment(btnCadastrar, javafx.geometry.HPos.CENTER);
-        Button btnEditar = new Button("Editar Agendamento");
-        grid.add(btnEditar, 1, 2);
         Button btnRemover = new Button("Remover Agendamento");
         grid.add(btnRemover, 2, 2);
         GridPane.setHalignment(lblTitulo, javafx.geometry.HPos.CENTER);
         grid.setVgap(10);
         grid.setPadding(new Insets(30, 20, 20, 20));
         HBox linhaBotoes = new HBox(10);
-        linhaBotoes.getChildren().addAll(btnCadastrar, btnEditar, btnRemover);
+        linhaBotoes.getChildren().addAll(btnCadastrar, btnRemover);
         linhaBotoes.setAlignment(Pos.CENTER);
         HBox linhaTitulo = new HBox();
         linhaTitulo.getChildren().add(lblTitulo);
@@ -118,9 +116,6 @@ public class Agendamentos {
         btnCadastrar.setOnAction(e -> {
             CadastrarAgenda.abrirJanela();
 
-        });
-        btnEditar.setOnAction(e -> {
-            //App.inserirCena(EditarAgendamento.criarCena());
         });
         btnRemover.setOnAction(e -> {
             RemoverAgenda.abrirJanela();

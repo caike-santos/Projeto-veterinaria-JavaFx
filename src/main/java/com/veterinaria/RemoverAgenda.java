@@ -1,11 +1,14 @@
 package com.veterinaria;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -37,8 +40,8 @@ public class RemoverAgenda {
 
         Label lblData = new Label("Data do agendamento:");
 
-        TextField txtData = new TextField();
-        txtData.setMaxWidth(250);
+        DatePicker Data = new DatePicker();
+        Data.setMaxWidth(250);
 
         Label lblHora = new Label("Hora do agendamento:");
 
@@ -46,7 +49,7 @@ public class RemoverAgenda {
         txtHora.setMaxWidth(250);
 
         HBox linhaData = new HBox(15);
-        linhaData.getChildren().addAll(lblData, txtData);
+        linhaData.getChildren().addAll(lblData, Data);
         linhaData.setAlignment(Pos.CENTER);
 
         HBox linhaHora = new HBox(15);
@@ -63,7 +66,7 @@ public class RemoverAgenda {
         principal.setAlignment(Pos.CENTER);
 
         btnRemover.setOnAction(e -> {
-            String data = txtData.getText().trim();
+            String data = Data.getValue().toString();
             String hora = txtHora.getText().trim();
             if (data.isEmpty() || hora.isEmpty()) {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -72,13 +75,37 @@ public class RemoverAgenda {
                 alert.setContentText("Por favor, digite a data e a hora do agendamento que deseja remover.");
                 alert.showAndWait();
                 return;
-            }
+            }else{
+                // Aceita formatos como "9:00", "09:00", "9:30:00", "09:30:00"
+                DateTimeFormatter[] formatadores = {
+                    DateTimeFormatter.ofPattern("H:mm"),      // 9:00
+                    DateTimeFormatter.ofPattern("HH:mm"),     // 09:00
+                    DateTimeFormatter.ofPattern("H:mm:ss"),   // 9:00:00
+                    DateTimeFormatter.ofPattern("HH:mm:ss")   // 09:00:00
+                };
+                
+                LocalTime hora1 = null;
+                String horaTexto = txtHora.getText().trim();
+                
+                for (DateTimeFormatter fmt : formatadores) {
+                    try {
+                        hora1 = LocalTime.parse(horaTexto, fmt);
+                        break;
+                    } catch (Exception e1) {
+                        // Tenta o próximo formato
+                    }
+                }
+                
+                if (hora1 == null) {
+                    CadastroCliente.mostarNaTela("Formato de hora inválido!", "Use o formato: HH:mm ou HH:mm:ss\nExemplos: 09:00 ou 09:30:00");
+                    return;
+                }
             boolean agendaRemovida = false;
             //procura o agendamento na lista de agendamentos do cliente e remove
             Iterator<Agenda> agendamento = BancoDeDados.getAgendas().iterator();
             while(agendamento.hasNext()) {
                 Agenda a = agendamento.next();
-                if(a.getData().toString().equals(data) && a.getHora().toString().equals(hora)) {
+                if(a.getData().toString().equals(data) && a.getHora().toString().equals(hora1) && a.getCliente().getNome().equalsIgnoreCase(EditarCliente.getC().getNome())) {
                     agendamento.remove();
                     agendaRemovida = true;
                     break;
@@ -101,7 +128,7 @@ public class RemoverAgenda {
             }
             popup.close();
             
-
+        }
 
         });
 
