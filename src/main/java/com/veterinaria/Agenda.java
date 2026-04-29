@@ -2,6 +2,7 @@ package com.veterinaria;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,8 +79,9 @@ public class Agenda {
 
 		public String exibirAgenda() {
 			StringBuilder sb = new StringBuilder();
-			sb.append("Data: " + getData() + "\n");
-			sb.append("Hora: " + getHora() + "\n");
+			//exibe data no formato dd/MM/yyyy
+			sb.append("Data: " + getData().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "\n");
+			sb.append("Hora: " + getHora().format(DateTimeFormatter.ofPattern("HH:mm")) + "\n");
 			sb.append("Cliente: " + getCliente().getNome() + "\n");
 			sb.append("Serviço: " + getServico().getNome() + "\n");
 			sb.append("Funcionário: " + getFuncionario().getNome() + "\n");

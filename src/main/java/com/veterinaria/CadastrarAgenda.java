@@ -20,6 +20,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
 public class CadastrarAgenda {
     private static ComboBox<String> cbmServico;
@@ -56,11 +57,105 @@ public class CadastrarAgenda {
 
         Label lblData = new Label("Data do agendamento:");
         data = new DatePicker();
+        data.getEditor().textProperty().addListener((observable, valorAntigo, valorNovo) -> {
+
+        if (valorNovo == null) return;
+
+            // Remove tudo que não for número (Impede o usuário de digitar letras)
+            String apenasNumeros = valorNovo.replaceAll("[^\\d]", "");
+
+            // Limita a 11 números no máximo
+            if (apenasNumeros.length() > 8) {
+                apenasNumeros = apenasNumeros.substring(0, 8);
+            }
+
+            // Monta o texto colocando a barra nas posições certas
+            StringBuilder formatado = new StringBuilder();
+                for (int i = 0; i < apenasNumeros.length(); i++) {
+                // Coloca barra depois do dia (posição 2) e do mês (posição 4)
+                if (i == 2 || i == 4) {
+                    formatado.append("/");
+            }
+                    formatado.append(apenasNumeros.charAt(i));
+    }
+
+            // Se o texto digitado for diferente da máscara, ele substitui e joga o cursor pro final
+            if (!valorNovo.equals(formatado.toString())) {
+                
+                // O Platform.runLater é um truque para o JavaFX não bugar a posição do cursor no teclado
+                javafx.application.Platform.runLater(() -> {
+                    data.getEditor().setText(formatado.toString());
+                    data.getEditor().positionCaret(formatado.length()); 
+                });
+            }
+         });
+        DateTimeFormatter formatoBR = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+// 2. Coloca o tradutor no DatePicker
+        data.setConverter(new StringConverter<LocalDate>() {
+    
+        // Transforma a Data (Objeto) em Texto para mostrar na tela
+        @Override
+        public String toString(LocalDate data) {
+            if (data != null) {
+                return formatoBR.format(data);
+            }
+            return "";
+        }
+
+        // Transforma o Texto digitado no teclado em Data (Objeto)
+        @Override
+        public LocalDate fromString(String texto) {
+            if (texto != null && !texto.trim().isEmpty()) {
+                try {
+                    // Tenta ler no formato BR
+                    return LocalDate.parse(texto, formatoBR);
+                } catch (Exception e) {
+                    // Se o usuário digitar letras ou uma data impossível (32/15/2020), 
+                    // ele devolve nulo e o DatePicker apaga o erro sozinho!
+                    return null; 
+                }
+            }
+            return null;
+        }
+});
         data.setPromptText("Selecione a data");
         data.setMaxWidth(250);
 
         Label lblHora = new Label("Hora do agendamento:");
         txtHora = new TextField();
+        txtHora.textProperty().addListener((observable, valorAntigo, valorNovo) -> {
+
+        if (valorNovo == null) return;
+
+            // Remove tudo que não for número (Impede o usuário de digitar letras)
+            String apenasNumeros = valorNovo.replaceAll("[^\\d]", "");
+
+            // Limita a 4 números no máximo
+            if (apenasNumeros.length() > 4) {
+                apenasNumeros = apenasNumeros.substring(0, 4);
+            }
+
+            // Monta o texto colocando a barra nas posições certas
+            StringBuilder formatado = new StringBuilder();
+            for (int i = 0; i < apenasNumeros.length(); i++) {
+                if (i == 2){
+                    formatado.append(":");
+                }
+
+                formatado.append(apenasNumeros.charAt(i));
+            }
+
+            // Se o texto digitado for diferente da máscara, ele substitui e joga o cursor pro final
+            if (!valorNovo.equals(formatado.toString())) {
+                
+                // O Platform.runLater é um truque para o JavaFX não bugar a posição do cursor no teclado
+                javafx.application.Platform.runLater(() -> {
+                    txtHora.setText(formatado.toString());
+                    txtHora.positionCaret(formatado.length()); 
+                });
+            }
+         });
         txtHora.setPromptText("Ex: 09:00");
         txtHora.setMaxWidth(250);
 
@@ -120,7 +215,7 @@ public class CadastrarAgenda {
             
             
              
-            if(cbmServico.getSelectionModel().isEmpty() || data.getValue() == null || txtHora.getText().trim().isEmpty() || cbmFuncionario.getSelectionModel().isEmpty()){
+            if(cbmServico.getSelectionModel().isEmpty() || data.getValue() == null || txtHora.getText().trim().isEmpty() || cbmFuncionario.getSelectionModel().isEmpty() || data == null){
                 CadastroCliente.mostarNaTela("Faltam dados do Agendamento!", "Por favor, preencha todos os campos para cadastrar o agendamento.");
                 return;
             }else{
