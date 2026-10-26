@@ -11,6 +11,8 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.UUID;
 
+@SQLDelete(sql = "UPDATE pets Set ativo = false WHERE id = ? AND versao = ?")
+@SQLRestriction("ativo=true")
 @Data
 @Entity(name = "pets")
 public class Pet{
@@ -25,8 +27,6 @@ public class Pet{
     @Past(message = "A data tem que estar no passado")
     @NotNull(message = "A data é obrigatória")
     @Column(nullable = false)
-    @SQLDelete(sql = "UPDATE pets Set ativo = false WHERE id = ? AND versao = ?")
-    @SQLRestriction("ativo=true")
     private LocalDate dataNascimento;
 
     @NotNull(message = "O genero é obrigatório")

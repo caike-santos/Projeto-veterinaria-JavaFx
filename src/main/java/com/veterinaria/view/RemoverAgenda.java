@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class RemoverAgenda {
-    public static void abrirJanela(){
+    public static void abrirJanela() {
         Stage popup = new Stage();
         popup.setTitle("Remover Agenda");
 
@@ -39,8 +39,6 @@ public class RemoverAgenda {
 
         Label lblTituloRemover = new Label("Remover Agenda");
         lblTituloRemover.getStyleClass().add("titulo");
-
-        
 
         HBox header = new HBox(20);
         header.getChildren().addAll(visulogoCadastro, lblTituloRemover);
@@ -54,7 +52,7 @@ public class RemoverAgenda {
         Data.setMaxWidth(250);
         Data.getEditor().textProperty().addListener((observable, valorAntigo, valorNovo) -> {
 
-        if (valorNovo == null) return;
+            if (valorNovo == null) return;
 
             // Remove tudo que não for número (Impede o usuário de digitar letras)
             String apenasNumeros = valorNovo.replaceAll("[^\\d]", "");
@@ -66,24 +64,24 @@ public class RemoverAgenda {
 
             // Monta o texto colocando a barra nas posições certas
             StringBuilder formatado = new StringBuilder();
-                for (int i = 0; i < apenasNumeros.length(); i++) {
+            for (int i = 0; i < apenasNumeros.length(); i++) {
                 // Coloca barra depois do dia (posição 2) e do mês (posição 4)
                 if (i == 2 || i == 4) {
                     formatado.append("/");
+                }
+                formatado.append(apenasNumeros.charAt(i));
             }
-                    formatado.append(apenasNumeros.charAt(i));
-    }
 
             // Se o texto digitado for diferente da máscara, ele substitui e joga o cursor pro final
-            if (!valorNovo.equals(formatado.toString())) {
-                
+            if (!valorNovo.contentEquals(formatado)) {
+
                 // O Platform.runLater é um truque para o JavaFX não bugar a posição do cursor no teclado
                 javafx.application.Platform.runLater(() -> {
                     Data.getEditor().setText(formatado.toString());
-                    Data.getEditor().positionCaret(formatado.length()); 
+                    Data.getEditor().positionCaret(formatado.length());
                 });
             }
-         });
+        });
         DateTimeFormatter formatoBR = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         // 2. Coloca o tradutor no DatePicker
@@ -121,7 +119,7 @@ public class RemoverAgenda {
         txtHora.setMaxWidth(250);
         txtHora.textProperty().addListener((observable, valorAntigo, valorNovo) -> {
 
-        if (valorNovo == null) return;
+            if (valorNovo == null) return;
 
             // Remove tudo que não for número (Impede o usuário de digitar letras)
             String apenasNumeros = valorNovo.replaceAll("[^\\d]", "");
@@ -134,7 +132,7 @@ public class RemoverAgenda {
             // Monta o texto colocando a barra nas posições certas
             StringBuilder formatado = new StringBuilder();
             for (int i = 0; i < apenasNumeros.length(); i++) {
-                if (i == 2){
+                if (i == 2) {
                     formatado.append(":");
                 }
 
@@ -143,14 +141,14 @@ public class RemoverAgenda {
 
             // Se o texto digitado for diferente da máscara, ele substitui e joga o cursor pro final
             if (!valorNovo.equals(formatado.toString())) {
-                
+
                 // O Platform.runLater é um truque para o JavaFX não bugar a posição do cursor no teclado
                 javafx.application.Platform.runLater(() -> {
                     txtHora.setText(formatado.toString());
-                    txtHora.positionCaret(formatado.length()); 
+                    txtHora.positionCaret(formatado.length());
                 });
             }
-         });
+        });
 
         HBox linhaData = new HBox(15);
         linhaData.getChildren().addAll(lblData, Data);
@@ -170,7 +168,7 @@ public class RemoverAgenda {
         principal.setAlignment(Pos.CENTER);
 
         btnRemover.setOnAction(event -> {
-            try{
+            try {
                 String hora = txtHora.getText().trim();
                 Data.setValue(Data.getConverter().fromString(Data.getEditor().getText()));
                 if (Data.getValue() == null || hora.isEmpty()) {
@@ -180,7 +178,7 @@ public class RemoverAgenda {
                     alert.setContentText("Por favor, digite a data e a hora do agendamento que deseja remover.");
                     alert.showAndWait();
                     return;
-                }else{
+                } else {
                     // Aceita formatos como "9:00", "09:00", "9:30:00", "09:30:00"
                     DateTimeFormatter[] formatadores = {
                             DateTimeFormatter.ofPattern("H:mm"),      // 9:00
@@ -201,7 +199,7 @@ public class RemoverAgenda {
                     }
                     data1 = Data.getValue();
                     if (hora1 == null) {
-                        CadastroCliente.mostarNaTela("Formato de hora inválido!", "Use o formato: HH:mm ou HH:mm:ss\nExemplos: 09:00 ou 09:30:00");
+                        EditarCliente.mostarNaTela("Formato de hora inválido!", "Use o formato: HH:mm ou HH:mm:ss\nExemplos: 09:00 ou 09:30:00");
                         return;
                     }
 

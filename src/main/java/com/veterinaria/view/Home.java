@@ -23,10 +23,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class Home {
+    @Getter
     private static TextField txtCpf;
 
     public static Parent criarCena(Atendente atendente) {
@@ -107,7 +109,7 @@ public class Home {
             }
 
             // Se o texto digitado for diferente da máscara, ele substitui e joga o cursor pro final
-            if (!valorNovo.equals(formatado.toString())) {
+            if (!valorNovo.contentEquals(formatado)) {
 
                 // O Platform.runLater é um truque para o JavaFX não bugar a posição do cursor no teclado
                 javafx.application.Platform.runLater(() -> {
@@ -119,7 +121,6 @@ public class Home {
         HBox linhaCpf = new HBox();
         linhaCpf.getChildren().add(txtCpf);
 
-
         Button btnBuscar = new Button("Buscar");
         HBox linhaBtnBuscar = new HBox();
         linhaBtnBuscar.getChildren().add(btnBuscar);
@@ -127,12 +128,9 @@ public class Home {
 
         VBox conteudoBuscar = new VBox(30);
         conteudoBuscar.getChildren().addAll(linhaSubTitulo, linhaBuscar, linhaCpf, linhaBtnBuscar);
-        //conteudoBuscar.setPadding(new Insets(30, 20, 20, 20));
-        //VBox.setVgrow( conteudoBuscar, Priority.ALWAYS);
 
         VBox colunaBuscar = new VBox(100);
         colunaBuscar.getChildren().addAll(linhaHeader, conteudoBuscar);
-
 
         VBox colunaCadastrar = new VBox(15);
         colunaCadastrar.getChildren().addAll(linhaHeader1, ExibirClientes.criarCena());
@@ -159,10 +157,12 @@ public class Home {
         VBox.setVgrow(painelDeAbas, Priority.ALWAYS);
 
         btnDeslogar.setOnAction(evento -> {
+            Login.setAtendente(null);
             App.inserirCena(Login.criarCena());
         });
 
         btnDeslogar1.setOnAction(evento -> {
+            Login.setAtendente(null);
             App.inserirCena(Login.criarCena());
         });
 
@@ -205,9 +205,5 @@ public class Home {
 
         return verticalHome;
 
-    }
-
-    public static TextField getTxtCpf() {
-        return txtCpf;
     }
 }

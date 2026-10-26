@@ -2,6 +2,7 @@ package com.veterinaria.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
@@ -25,22 +26,23 @@ public class Servico {
     @PositiveOrZero(message = "O preço tem que ser positivo")
     private float preco;
 
-    @NotBlank(message = "A profissão é obrigatoria")
-    private String profissional;
+    @NotNull(message = "A profissão é obrigatoria")
+    @Enumerated(EnumType.STRING)
+    private Profissao profissao;
 
     private boolean ativo = true;
+
     @Version
     private Long versao;
 
-    public Servico(String nome, float preco, String profissional) {
+    public Servico(String nome, float preco, Profissao profissao) {
         this.nome = nome;
         this.preco = preco;
-        this.profissional = profissional;
+        this.profissao = profissao;
     }
     public Servico(){}
 
     public String exibeDados(){
-        String dados =  getNome() + "\nR$ " + getPreco() + "\nProfissional: " + getProfissional();
-        return dados;
+        return getNome() + "\nR$ " + getPreco() + "\nProfissional: " + getProfissao();
     }
 }

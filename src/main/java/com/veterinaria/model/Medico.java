@@ -11,8 +11,8 @@ import java.util.UUID;
 @DiscriminatorValue("Medico")
 public class Medico extends Funcionario {
     private String cmrv;
-    public Medico(String nome, LocalDate dataNascimento, String cpf, Endereco endereco, Telefone telefone, String email, UUID id, float salario, String profissao, List<Servico> funcoes, String cmrv){
-        super(nome, dataNascimento, cpf, endereco, telefone, email, id, salario, profissao, funcoes);
+    public Medico(String nome, LocalDate dataNascimento, String cpf, Endereco endereco, Telefone telefone, String email, UUID id, float salario, List<Servico> funcoes, String cmrvString,String usuario, String senha){
+        super(nome, dataNascimento, cpf, endereco, telefone, email, id, salario,Profissao.Medico_Veterinario, funcoes, usuario, senha);
         this.cmrv = cmrv;
     }
     public Medico(){}

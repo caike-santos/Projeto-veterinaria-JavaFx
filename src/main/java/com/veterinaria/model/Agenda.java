@@ -36,6 +36,11 @@ public class Agenda {
 	private Cliente cliente;
 
 	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "pet_id", nullable = false)
+	@NotNull(message = "O pet é obrigatório")
+	private Pet pet;
+
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "servico_id", nullable = false)
 	@NotNull(message = "O serviço é obrigatório")
 	private Servico servico;
@@ -49,10 +54,11 @@ public class Agenda {
 	@Version
 	private Long versao;
 	
-	public Agenda(LocalDate data, LocalTime hora, Cliente cliente, Servico servico, Funcionario funcionario) {
+	public Agenda(LocalDate data, LocalTime hora, Cliente cliente, Pet pet, Servico servico, Funcionario funcionario) {
 		this.data = data;
 		this.hora = hora;
 		this.cliente = cliente;
+		this.pet = pet;
 		this.servico = servico;
 		this.funcionario = funcionario;
 	}
@@ -61,15 +67,14 @@ public class Agenda {
 
 
 		public String exibirAgenda() {
-			StringBuilder sb = new StringBuilder();
-			//exibe data no formato dd/MM/yyyy
-			sb.append("Data: " + getData().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "\n");
-			sb.append("Hora: " + getHora().format(DateTimeFormatter.ofPattern("HH:mm")) + "\n");
-			sb.append("Cliente: " + getCliente().getNome() + "\n");
-			sb.append("Serviço: " + getServico().getNome() + "\n");
-			sb.append("Funcionário: " + getFuncionario().getNome() + "\n");
-			sb.append("Valor: R$ " + getServico().getPreco() + "\n");
-			return sb.toString();
+            //exibe data no formato dd/MM/yyyy
+            return "Data: " + getData().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "\n" +
+                    "Hora: " + getHora().format(DateTimeFormatter.ofPattern("HH:mm")) + "\n" +
+                    "Cliente: " + getCliente().getNome() + "\n" +
+                    "Pet: " + getPet().getNome() + "\n" +
+                    "Serviço: " + getServico().getNome() + "\n" +
+                    "Funcionário: " + getFuncionario().getNome() + "\n" +
+                    "Valor: R$ " + getServico().getPreco() + "\n";
 		}
 	
 		}

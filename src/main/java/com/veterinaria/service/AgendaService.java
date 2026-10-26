@@ -4,6 +4,7 @@ import com.veterinaria.model.Agenda;
 import com.veterinaria.model.Cliente;
 import com.veterinaria.repository.AgendaRepository;
 import com.veterinaria.view.CadastroCliente;
+import com.veterinaria.view.EditarCliente;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class AgendaService {
     public void removerAgendas(Cliente cliente, LocalDate data, LocalTime hora){
        Agenda agenda = agendaRepository.findByClienteAndDataAndHora(cliente, data, hora);
        if(agenda == null){
-           CadastroCliente.mostarNaTela("Agendamento não encontrado", "O agendamento digitado não foi encontrado.");
+           EditarCliente.mostarNaTela("Agendamento não encontrado", "O agendamento digitado não foi encontrado.");
            throw new IllegalArgumentException("Agendamento não encontrado");
        }else{
            agendaRepository.delete(agenda);
@@ -41,7 +42,7 @@ public class AgendaService {
 
     public void cadastrarAgenda(@Valid Agenda agenda){
         if(agendaRepository.findByClienteAndDataAndHora(agenda.getCliente(), agenda.getData(), agenda.getHora()) != null){
-            CadastroCliente.mostarNaTela("Agendamento já existente", "Já tem uma agenda para esse cliente na mesma data e hora.");
+            EditarCliente.mostarNaTela("Agendamento já existente", "Já tem uma agenda para esse cliente na mesma data e hora.");
             throw new IllegalArgumentException("Agendamento na mesma data e hora pro mesmo cliente");
         }else{
             agendaRepository.save(agenda);

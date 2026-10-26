@@ -18,20 +18,7 @@ public class Telefone {
     }
     public Telefone(){}
 
-    public void setDdd(String ddd) {
-        this.ddd = ddd;
-    }
-    public String getDdd() {
-        return ddd;
-    }
-    public void setNumero(String numero) {
-        this.numero = numero;
-    }
-    public String getNumero() {
-        return numero;
-    }
 
-    
     public String exibeTelefone(){
         return "Telefone: (" + getDdd() + ") " + getNumero();
     }

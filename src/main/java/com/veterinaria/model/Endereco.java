@@ -6,11 +6,11 @@ import lombok.Data;
 @Data
 @Embeddable
 public class Endereco {
-    private String bairro = "null";
-    private String rua = "null";
+    private String bairro;
+    private String rua;
     private int numero = 0;
-    private String cep = "null";
-    private String complemento = "null";
+    private String cep;
+    private String complemento;
 
     public Endereco(String bairro, String rua, int numero, String cep, String complemento){
         this.bairro = bairro;

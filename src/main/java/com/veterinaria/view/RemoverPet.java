@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class RemoverPet {
-    public static void abrirJanela(){
+    public static void abrirJanela() {
         Stage popup = new Stage();
         popup.setTitle("Remover Pet");
 
@@ -89,7 +89,7 @@ public class RemoverPet {
         });
 
         String cssGlobal = App.class.getResource("/styles/style.css").toExternalForm();
-            principal.getStylesheets().add(cssGlobal);
+        principal.getStylesheets().add(cssGlobal);
 
         Scene pop = new Scene(principal, 700, 600);
         popup.setScene(pop);

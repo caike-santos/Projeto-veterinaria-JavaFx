@@ -22,13 +22,13 @@ import javafx.scene.layout.VBox;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class Cadastro{
-    public static Parent criarCena(Atendente atendente){
+public class Cadastro {
+    public static Parent criarCena(Atendente atendente) {
         TabPane painelDeAbas = new TabPane();
 
         Tab abaCliente = new Tab("Dados do Cliente");
         abaCliente.setClosable(false);
-        
+
         abaCliente.setContent(CadastroCliente.criarCena(atendente));
 
         Tab abaPet = new Tab("Dados do Pet");
@@ -43,7 +43,7 @@ public class Cadastro{
 
         Button btnCancelar = new Button("Cancelar");
 
-         btnCancelar.setOnAction(evento -> {
+        btnCancelar.setOnAction(evento -> {
             Alert confirmar = new Alert(Alert.AlertType.CONFIRMATION);
             confirmar.setTitle("Atenção");
             confirmar.setHeaderText("CANCELAR CADASTRO!!!");
@@ -53,59 +53,60 @@ public class Cadastro{
             ButtonType btnNao = new ButtonType("Não", javafx.scene.control.ButtonBar.ButtonData.CANCEL_CLOSE);
 
             confirmar.getButtonTypes().setAll(btnSim, btnNao);
-    
+
             confirmar.showAndWait().ifPresent(resposta -> {
-                if (resposta == btnSim){
+                if (resposta == btnSim) {
                     CadastroPet.getCadastro().clear();
+                    CadastroPet.getListaPet().clear();
                     App.inserirCena(Home.criarCena(atendente));
                 }
             });
-            
-    
-         });
+
+
+        });
 
         HBox rodape = new HBox(50);
         rodape.setAlignment(Pos.CENTER);
-        
-        
-        rodape.setPadding(new Insets(20, 30, 30, 30)); 
-        
-        
+
+
+        rodape.setPadding(new Insets(20, 30, 30, 30));
+
+
         rodape.getChildren().addAll(btnSalvarTudo, btnCancelar);
 
         btnSalvarTudo.setOnAction(evento -> {
-             try {
-                    CadastroCliente.setDpIdade(CadastroCliente.getDpIdade().getConverter().fromString(CadastroCliente.getDpIdade().getEditor().getText()));
-                } catch (Exception ex) {
-                    CadastroCliente.setDpIdade(null); // Se deu erro na conversão, vira nulo para ser barrado no if
-                }
-             String cadastroAtual = CadastroPet.getCadastro().getText().trim();
+            try {
+                CadastroCliente.setDpIdade(CadastroCliente.getDpIdade().getConverter().fromString(CadastroCliente.getDpIdade().getEditor().getText()));
+            } catch (Exception ex) {
+                CadastroCliente.setDpIdade(null); // Se deu erro na conversão, vira nulo para ser barrado no if
+            }
+            String cadastroAtual = CadastroPet.getCadastro().getText().trim();
 
             try {
-                if(CadastroCliente.temCampoVazioEndereco()){
-                    CadastroCliente.mostarNaTela("Faltam dados do endereço do Cliente!", "Por favor, volte na aba 'Dados do Cliente' e preencha todos os campos.");
+                if (CadastroCliente.temCampoVazioEndereco()) {
+                    EditarCliente.mostarNaTela("Faltam dados do endereço do Cliente!", "Por favor, volte na aba 'Dados do Cliente' e preencha todos os campos.");
                     return;
-                }else if(CadastroCliente.temCampoVazioDados()){
-                    CadastroCliente.mostarNaTela("Faltam dados pessoais do Cliente!", "Por favor, volte na aba 'Dados do Cliente' e preencha todos os campos.");
+                } else if (CadastroCliente.temCampoVazioDados()) {
+                    EditarCliente.mostarNaTela("Faltam dados pessoais do Cliente!", "Por favor, volte na aba 'Dados do Cliente' e preencha todos os campos.");
                     return;
-                }else if(cadastroAtual.isEmpty() ){
-                    CadastroCliente.mostarNaTela("Nenhum cadastro realizado", "Faça pelo menos um cadastro para poder finalizado");
+                } else if (cadastroAtual.isEmpty()) {
+                    EditarCliente.mostarNaTela("Nenhum cadastro realizado", "Faça pelo menos um cadastro para poder finalizado");
                     return;
                 }
 
-                int idadeNum = LocalDate.now().getYear() - CadastroCliente.getDpIdade().getValue().getYear();
+                int idadeNum = Cliente.getIdade(CadastroCliente.getDpIdade().getValue());
 
-                if(CadastroCliente.getTxtTelefone().getLength() < 9 || CadastroCliente.getTxtDdd().getLength() < 2){
-                    CadastroCliente.mostarNaTela("Quantidade de caracteres do ddd e telefone invalido", "Por favor, preencha o campo ddd e telefone corretamente");
-                }else if(idadeNum < 18 || idadeNum > 120){
-                    CadastroCliente.mostarNaTela("Idade inválida", "Por favor, preencha o campo idade com uma data de nascimento válida. O cliente deve ter entre 18 e 120 anos.");
-                }else if(CadastroCliente.getTxtCpf().getLength() < 11){
-                    CadastroCliente.mostarNaTela("Quantidade de caracteres do cpf invalido", "Por favor, preencha o campo cpf corretamente");
-                }else if(CadastroCliente.getTxtCep().getLength() < 8){
-                    CadastroCliente.mostarNaTela("Quantidade de caracteres do cep invalido", "Por favor, preencha o campo cep corretamente");
-                }else if(CadastroCliente.emailInvalido()){
-                    CadastroCliente.mostarNaTela("E-mail Inválido", "Por favor, digite um e-mail no formato correto (exemplo@dominio.com).");
-                }else{
+                if (CadastroCliente.getTxtTelefone().getLength() < 9 || CadastroCliente.getTxtDdd().getLength() < 2) {
+                    EditarCliente.mostarNaTela("Quantidade de caracteres do ddd e telefone invalido", "Por favor, preencha o campo ddd e telefone corretamente");
+                } else if (idadeNum < 18 || idadeNum > 120) {
+                    EditarCliente.mostarNaTela("Idade inválida", "Por favor, preencha o campo idade com uma data de nascimento válida. O cliente deve ter entre 18 e 120 anos.");
+                } else if (CadastroCliente.getTxtCpf().getLength() < 14) {
+                    EditarCliente.mostarNaTela("Quantidade de caracteres do cpf invalido", "Por favor, preencha o campo cpf corretamente");
+                } else if (CadastroCliente.getTxtCep().getLength() < 11) {
+                    EditarCliente.mostarNaTela("Quantidade de caracteres do cep invalido", "Por favor, preencha o campo cep corretamente");
+                } else if (CadastroCliente.emailInvalido()) {
+                    EditarCliente.mostarNaTela("E-mail Inválido", "Por favor, digite um e-mail no formato correto (exemplo@dominio.com).");
+                } else {
                     Cliente c = CadastroCliente.pegarDados(CadastroPet.getListaPet());
                     ClienteService clienteService = App.getBean(ClienteService.class);
                     Cliente clienteSalvo = clienteService.cadastrarCliente(c);
@@ -113,14 +114,9 @@ public class Cadastro{
                     Alert concluido = new Alert(Alert.AlertType.INFORMATION);
                     concluido.setTitle("Cadastro Finalizado");
                     concluido.setHeaderText("Imprimindo Cadastro");
-                    //String nomes = "";
-                /*for(Pet pet : CadastroPet.getListaPet()){
-                   nomes += pet.getNome() + ", ";
-                }*/
-                    //concluido.setContentText(c.getNome() + " seus(s) pet(s) " + nomes + "foi cadastrado com Sucesso");
-
                     concluido.setContentText(exibirDados(clienteSalvo));
                     concluido.showAndWait();
+
                     CadastroPet.getCadastro().clear();
                     CadastroPet.getListaPet().clear();
                     App.inserirCena(Home.criarCena(atendente));
@@ -131,7 +127,7 @@ public class Cadastro{
                 log.error("Erro inesperado:", e);
             }
         });
-            
+
         VBox telaPrincipal = new VBox();
         telaPrincipal.setAlignment(Pos.CENTER);
         VBox.setVgrow(painelDeAbas, Priority.ALWAYS);
@@ -142,14 +138,12 @@ public class Cadastro{
     }
 
 
-    public static String exibirDados(Cliente c){
-        String exibirDados = "";
-                exibirDados = c.exibeDados();
-                for(Pet pet : c.getPet()){
-                  exibirDados += "\nPet "+ (c.getPet().indexOf(pet) + 1) + "\n" + pet.exibePet();
-                }
-                return exibirDados;
+    public static String exibirDados(Cliente c) {
+        StringBuilder exibirDados = new StringBuilder();
+        exibirDados = new StringBuilder(c.exibeDados());
+        for (Pet pet : c.getPet()) {
+            exibirDados.append("\nPet ").append(c.getPet().indexOf(pet) + 1).append("\n").append(pet.exibePet());
+        }
+        return exibirDados.toString();
     }
 }
-
-

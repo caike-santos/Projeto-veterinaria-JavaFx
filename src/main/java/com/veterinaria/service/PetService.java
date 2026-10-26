@@ -29,7 +29,7 @@ public class PetService {
 
     public Pet cadastrarPet(String nome, LocalDate dataDeNascimento, String genero, String raca){
         if(dataDeNascimento == null){
-            CadastroCliente.mostarNaTela("Data de nascimento inválida!", "Por favor, preencha a data de nascimento com uma data válida.");
+            EditarCliente.mostarNaTela("Data de nascimento inválida!", "Por favor, preencha a data de nascimento com uma data válida.");
             throw new IllegalArgumentException("Data invalida");
         }
         else{
@@ -37,7 +37,7 @@ public class PetService {
                 case "Macho" -> Genero.Macho;
                 case "Femea" -> Genero.Femea;
                 default -> {
-                    CadastroCliente.mostarNaTela("Genero invalido", "Por favor, preencha com o genero correto para cadastrar o pet.");
+                    EditarCliente.mostarNaTela("Genero invalido", "Por favor, preencha com o genero correto para cadastrar o pet.");
                     throw new IllegalArgumentException("Genero invalido");
                 }
             };
@@ -45,7 +45,7 @@ public class PetService {
             Pet pet = new Pet(nome, dataDeNascimento, gen, raca);
             int idadeNum = pet.getIdade();
             if(idadeNum < 0 || idadeNum > 100){
-                CadastroCliente.mostarNaTela("Idade do pet inválida!", "Por favor, preencha a data de nascimento com uma data válida. O pet deve ter entre 0 e 100 anos.");
+                EditarCliente.mostarNaTela("Idade do pet inválida!", "Por favor, preencha a data de nascimento com uma data válida. O pet deve ter entre 0 e 100 anos.");
                 throw new IllegalArgumentException("Idade inválida");
             }
             log.info("\nnome: "+ pet.getNome() +
@@ -59,7 +59,7 @@ public class PetService {
     public Cliente adicionarPet(List<Pet> listaPet, Cliente c){
 
         if(listaPet.isEmpty()){
-            CadastroCliente.mostarNaTela("Nenhum cadastro realizado", "Faça pelo menos um cadastro para poder finalizado");
+            EditarCliente.mostarNaTela("Nenhum cadastro realizado", "Faça pelo menos um cadastro para poder finalizado");
             throw new IllegalArgumentException("Nenhum cadastro foi realizado");
         }
         for(Pet p : listaPet){
@@ -77,7 +77,7 @@ public class PetService {
                 return clienteRepository.save(c);
             }
         }
-            CadastroCliente.mostarNaTela("Pet não encontrado", "O pet digitado não foi encontrado.");
+            EditarCliente.mostarNaTela("Pet não encontrado", "O pet digitado não foi encontrado.");
             throw new IllegalArgumentException("Nenhum pet foi encontrado com esse nome");
     }
 }

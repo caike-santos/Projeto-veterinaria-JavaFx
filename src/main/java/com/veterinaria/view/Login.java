@@ -20,14 +20,19 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class Login{
-    
+public class Login {
+
+    @Setter
+    @Getter
     private static Atendente atendente;
-    public static Parent criarCena(){
-        
+
+    public static Parent criarCena() {
+
         Image logo = new Image(Login.class.getResource("/imagens/pet.png").toExternalForm());
         ImageView mostarLogo = new ImageView(logo);
         mostarLogo.setFitHeight(60);
@@ -38,7 +43,7 @@ public class Login{
 
         HBox linhaHeader = new HBox(10);
         linhaHeader.getChildren().addAll(mostarLogo, lblTitulo);
-        
+
         Label lblUsuario = new Label("Usuario:");
         TextField txtUsuario = new TextField();
         txtUsuario.setMaxWidth(250);
@@ -68,19 +73,22 @@ public class Login{
         vertical.setAlignment(Pos.CENTER);
 
         btnLogar.setOnAction(evento -> {
-        try {
-            String nome = txtUsuario.getText();
-            String senha = txtSenha.getText();
+            try {
+                String nome = txtUsuario.getText();
+                String senha = txtSenha.getText();
 
-            FuncionarioService funcionarioService = App.getBean(FuncionarioService.class);
+                FuncionarioService funcionarioService = App.getBean(FuncionarioService.class);
 
-            Funcionario funcionario = funcionarioService.login(nome, senha);
-            if(funcionario instanceof Atendente atendenteLogado){
-                atendente = atendenteLogado;
-                log.info("Atendente {} logado(a)", atendente.getNome());
-                App.inserirCena(Home.criarCena(atendenteLogado));
-            }
-        } catch (IllegalArgumentException | ConstraintViolationException e) {
+                Funcionario funcionario = funcionarioService.login(nome, senha);
+                if (funcionario instanceof Atendente atendenteLogado) {
+                    atendente = atendenteLogado;
+                    log.info("Atendente {} logado(a)", atendente.getNome());
+                    App.inserirCena(Home.criarCena(atendenteLogado));
+                }else{
+                    EditarCliente.mostarNaTela("Espere", "Suas telas ainda não foram criadas");
+                    return;
+                }
+            } catch (IllegalArgumentException | ConstraintViolationException e) {
                 log.warn("Erro de validação: {}", e.getMessage());
             } catch (Exception e) {
                 log.error("Erro inesperado:", e);
@@ -89,7 +97,5 @@ public class Login{
 
         return vertical;
     }
-    public static Atendente getAtendente() {
-        return atendente;
-    }
+
 }

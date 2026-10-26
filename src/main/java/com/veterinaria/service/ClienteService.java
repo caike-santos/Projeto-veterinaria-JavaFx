@@ -4,6 +4,7 @@ import com.veterinaria.model.Cliente;
 import com.veterinaria.repository.ClienteRepository;
 import com.veterinaria.view.CadastroCliente;
 
+import com.veterinaria.view.EditarCliente;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,10 +26,10 @@ public class ClienteService {
    @Transactional(readOnly = true)
     public Cliente buscarCliente(String cpf, String nomeAtendente){
         if(cpf.isEmpty()){
-            CadastroCliente.mostarNaTela("Campo Vazio", nomeAtendente + ", preencha o campo corretamente");
+            EditarCliente.mostarNaTela("Campo Vazio", nomeAtendente + ", preencha o campo corretamente");
             throw new IllegalArgumentException("Campo cpf vazio");
         }else if(cpf.length() != 14){
-            CadastroCliente.mostarNaTela("Quantidade de caracteres inválidos", nomeAtendente + ", preencha o campo corretamente");
+            EditarCliente.mostarNaTela("Quantidade de caracteres inválidos", nomeAtendente + ", preencha o campo corretamente");
             throw new IllegalArgumentException("Campo cpf faltando caracteres");
         }
 
@@ -38,7 +39,7 @@ public class ClienteService {
 
     public Cliente cadastrarCliente(@Valid Cliente c){
         if (clienteRepository.findByCpf(c.getCpf()) != null) {
-            CadastroCliente.mostarNaTela("CPF já cadastrado!", "Já existe um cliente com esse CPF.");
+            EditarCliente.mostarNaTela("CPF já cadastrado!", "Já existe um cliente com esse CPF.");
             throw new IllegalArgumentException("CPF duplicado");
         }
         log.info("Novo cliente cadastrado: [{}]", c.getNome());

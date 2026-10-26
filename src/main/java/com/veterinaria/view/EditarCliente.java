@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+
 import com.veterinaria.model.Cliente;
 import com.veterinaria.App;
 import com.veterinaria.model.*;
@@ -33,21 +34,34 @@ import javafx.scene.layout.HBox;
 import javafx.util.StringConverter;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class EditarCliente {
+    @Getter
     private static TextField txtNome;
+    @Getter
     private static DatePicker dpIdade;
+    @Getter
     private static TextField txtCpf;
+    @Getter
     private static TextField txtEmail;
+    @Getter
     private static TextField txtDdd;
+    @Getter
     private static TextField txtTelefone;
+    @Getter
     private static TextField txtBairro;
+    @Getter
     private static TextField txtRua;
+    @Getter
     private static TextField txtCep;
+    @Getter
     private static TextField txtNumero;
+    @Getter
     private static TextArea areaComplemento;
+    @Getter
     private static Cliente c;
 
     public static Parent criarCena(Cliente c1) {
@@ -101,14 +115,9 @@ public class EditarCliente {
         Label lblSubTituloDados = new Label("Dados Pessoais");
         lblSubTituloDados.getStyleClass().add("subtitulo");
 
-        //HBox linhaSubTituloDados = new HBox(10);
-        //linhaSubTituloDados.getChildren().add(lblSubTituloDados);
-
         Label lblNome = new Label("Nome:");
         txtNome = new TextField();
         txtNome.setMaxWidth(150);
-        //HBox linhaNome = new HBox(10);
-        //linhaNome.getChildren().addAll(lblNome, txtNome);
 
         Label lblIdade = new Label("Data de Nascimento:");
         dpIdade = new DatePicker();
@@ -139,7 +148,7 @@ public class EditarCliente {
             }
 
             // Se o texto digitado for diferente da máscara, ele substitui e joga o cursor pro final
-            if (!valorNovo.equals(formatado.toString())) {
+            if (!valorNovo.contentEquals(formatado)) {
 
                 // O Platform.runLater é um truque para o JavaFX não bugar a posição do cursor no teclado
                 javafx.application.Platform.runLater(() -> {
@@ -179,9 +188,6 @@ public class EditarCliente {
             }
         });
 
-        //HBox linhaIdade = new HBox(10);
-        //linhaIdade.getChildren().addAll(lblIdade, txtIdade);
-
         Label lblCpf = new Label("Cpf:");
         txtCpf = new TextField();
         txtCpf.setMaxWidth(150);
@@ -202,16 +208,16 @@ public class EditarCliente {
             StringBuilder formatado = new StringBuilder();
             for (int i = 0; i < apenasNumeros.length(); i++) {
                 if (i == 3 || i == 6) {
-                    formatado.append("-");
-                } else if (i == 9) {
                     formatado.append(".");
+                } else if (i == 9) {
+                    formatado.append("-");
                 }
 
                 formatado.append(apenasNumeros.charAt(i));
             }
 
             // Se o texto digitado for diferente da máscara, ele substitui e joga o cursor pro final
-            if (!valorNovo.equals(formatado.toString())) {
+            if (!valorNovo.contentEquals(formatado)) {
 
                 // O Platform.runLater é um truque para o JavaFX não bugar a posição do cursor no teclado
                 javafx.application.Platform.runLater(() -> {
@@ -220,16 +226,11 @@ public class EditarCliente {
                 });
             }
         });
-        //HBox linhaCpf = new HBox(10);
-        //linhaCpf.getChildren().addAll(lblCpf, txtCpf);
 
         Label lblEmail = new Label("Email:");
         txtEmail = new TextField();
         txtEmail.setPromptText("exemplo@email.com");
         txtEmail.setMaxWidth(150);
-
-        //HBox linhaEmail = new HBox(10);
-        //linhaEmail.getChildren().addAll(lblEmail, txtEmail);
 
         Label lblDdd = new Label("Ddd:");
         txtDdd = new TextField();
@@ -266,12 +267,11 @@ public class EditarCliente {
                 if (i == 5) {
                     formatado.append("-");
                 }
-
                 formatado.append(apenasNumeros.charAt(i));
             }
 
             // Se o texto digitado for diferente da máscara, ele substitui e joga o cursor pro final
-            if (!valorNovo.equals(formatado.toString())) {
+            if (!valorNovo.contentEquals(formatado)) {
 
                 // O Platform.runLater é um truque para o JavaFX não bugar a posição do cursor no teclado
                 javafx.application.Platform.runLater(() -> {
@@ -280,11 +280,6 @@ public class EditarCliente {
                 });
             }
         });
-        //HBox linhaTelefone = new HBox(10);
-        //linhaTelefone.getChildren().addAll(lblTelefone, txtTelefone);
-
-        //VBox dadosPessoais = new VBox(20);
-        //dadosPessoais.getChildren().addAll(linhaSubTituloDados, linhaNome, linhaIdade, linhaCpf, linhaEmail, linhaTelefone);
 
         gridDados.add(lblSubTituloDados, 0, 0, 2, 1);
         GridPane.setHalignment(lblSubTituloDados, javafx.geometry.HPos.CENTER);
@@ -314,20 +309,13 @@ public class EditarCliente {
         Label lblSubTituloEndereco = new Label("Endereço");
         lblSubTituloEndereco.getStyleClass().add("subtitulo");
 
-        //HBox linhaSubTituloEndereco = new HBox(10);
-        //linhaSubTituloEndereco.getChildren().add(lblSubTituloEndereco);
-
         Label lblBairro = new Label("Bairro:");
         txtBairro = new TextField();
         txtBairro.setMaxWidth(150);
-        //HBox linhaBairro = new HBox(10);
-        //linhaBairro.getChildren().addAll(lblBairro, txtBairro);
 
         Label lblRua = new Label("Rua:");
         txtRua = new TextField();
         txtRua.setMaxWidth(150);
-        // HBox linhaRua = new HBox(10);
-        //linhaRua.getChildren().addAll(lblRua, txtRua);
 
         Label lblNumero = new Label("Numero:");
         txtNumero = new TextField();
@@ -338,8 +326,6 @@ public class EditarCliente {
                 txtNumero.setText(valorNovo.replaceAll("[^\\d]", ""));
             }
         });
-        //HBox linhaNumero = new HBox(10);
-        //linhaNumero.getChildren().addAll(lblNumero, txtNumero);
 
         Label lblCep = new Label("Cep:");
         txtCep = new TextField();
@@ -368,7 +354,7 @@ public class EditarCliente {
             }
 
             // Se o texto digitado for diferente da máscara, ele substitui e joga o cursor pro final
-            if (!valorNovo.equals(formatado.toString())) {
+            if (!valorNovo.contentEquals(formatado)) {
 
                 // O Platform.runLater é um truque para o JavaFX não bugar a posição do cursor no teclado
                 javafx.application.Platform.runLater(() -> {
@@ -377,21 +363,12 @@ public class EditarCliente {
                 });
             }
         });
-        //HBox linhaCep = new HBox(10);
-        //linhaCep.getChildren().addAll(lblCep, txtCep);
 
         Label lblComplemento = new Label("Complemento:");
         areaComplemento = new TextArea();
         areaComplemento.setEditable(true);
         areaComplemento.setMaxWidth(150);
         areaComplemento.setPrefHeight(75);
-        //VBox colunaComplemento = new VBox(10);
-        // colunaComplemento.getChildren().addAll(lblComplemento, areaComplemento);
-        //HBox linhaComplemento = new HBox(10);
-        //linhaComplemento.getChildren().addAll(lblComplemento, areaComplemento);
-
-        //VBox endereco = new VBox(20);
-        //endereco.getChildren().addAll(linhaSubTituloEndereco, linhaBairro, linhaRua, linhaNumero, linhaCep, linhaComplemento);
 
         gridEndereco.add(lblSubTituloEndereco, 0, 0, 2, 1);
         GridPane.setHalignment(lblSubTituloEndereco, javafx.geometry.HPos.CENTER);
@@ -427,26 +404,27 @@ public class EditarCliente {
         // 1. Limpa a sanfona velha
         sanfonaPets.getPanes().clear();
 
+        VBox detalhes = new VBox(5);
+
+        if (c1.getPet().isEmpty()) {
+            detalhes.getChildren().add(new Label("Nenhum pet cadastrado."));
+        }
+
         // 2. ORDENA a lista de pets EM ORDEM ALFABÉTICA!
         c1.getPet().sort(Comparator.comparing(Pet::getNome, String.CASE_INSENSITIVE_ORDER));
 
         // 2. Passa por cada pet no banco de dados
         for (Pet pet : c1.getPet()) {
             // 3. Cria a "caixa" (VBox) que vai ficar ESCONDIDA dentro da sanfona
-            VBox detalhes = new VBox(5);
-
             // Adiciona um título pros Pets com a numeração
             Label tituloPets = new Label("\n🐾 Pets " + (c1.getPet().indexOf(pet) + 1));
             tituloPets.setStyle("-fx-font-weight: bold;"); // Deixa negrito
             detalhes.getChildren().add(tituloPets);
 
             // Lista os pets dentro dessa mesma caixa
-            if (c1.getPet().isEmpty()) {
-                detalhes.getChildren().add(new Label("Nenhum pet cadastrado."));
-            } else {
+
                 //exibe os dados do pet
-                detalhes.getChildren().add(new Label(pet.exibePet()));
-            }
+            detalhes.getChildren().add(new Label(pet.exibePet()));
 
             // 4. Cria a "Barra" (TitledPane) que fica visível, colocando a VBox dentro dela!
             TitledPane painelCliente = new TitledPane(pet.getNome(), detalhes);
@@ -454,7 +432,6 @@ public class EditarCliente {
 
             // 5. Adiciona essa barra na sanfona principal
             sanfonaPets.getPanes().add(painelCliente);
-
 
         }
         ScrollPane rolagem = new ScrollPane();
@@ -487,7 +464,6 @@ public class EditarCliente {
         gridPets.add(coluna, 0, 1, 2, 1);
         GridPane.setVgrow(coluna, Priority.ALWAYS);
 
-
         Button btnCadastrar = new Button("Novo Pet");
 
         gridPets.add(btnCadastrar, 0, gridPets.getRowCount());
@@ -498,7 +474,6 @@ public class EditarCliente {
 
         HBox cadastro = new HBox(100);
         cadastro.getChildren().addAll(gridDados, gridEndereco);
-
 
         Arrays.asList(header, cadastro).forEach(linha -> linha.setAlignment(Pos.CENTER));
 
@@ -541,9 +516,7 @@ public class EditarCliente {
         HBox rodape = new HBox(50);
         rodape.setAlignment(Pos.CENTER);
 
-
         rodape.setPadding(new Insets(20, 30, 30, 30));
-
 
         rodape.getChildren().addAll(btnSalvarTudo, btnCancelar);
 
@@ -554,7 +527,7 @@ public class EditarCliente {
                 dpIdade.setValue(null); // Se deu erro na conversão, vira nulo para ser barrado no if
             }
 
-            try{
+            try {
                 if (EditarCliente.temCampoVazioEndereco()) {
                     EditarCliente.mostarNaTela("Faltam dados do endereço do Cliente!", "Por favor, volte na aba 'Dados do Cliente' e preencha todos os campos.");
                     log.warn("Faltam dados do endereço do Cliente!");
@@ -569,16 +542,16 @@ public class EditarCliente {
 
                 if (EditarCliente.getTxtTelefone().getLength() < 9 || EditarCliente.getTxtDdd().getLength() < 2) {
                     EditarCliente.mostarNaTela("Quantidade de caracteres do ddd e telefone invalido", "Por favor, preencha o campo ddd e telefone corretamente");
-                    log.warn("Quantidade de caracteres invalido");
+                    log.warn("Quantidade de caracteres do ddd e telefone invalido");
                 } else if (idadeNum < 18 || idadeNum > 120) {
                     EditarCliente.mostarNaTela("Idade do cliente invalida", "Por favor, preencha o campo idade corretamente(Apenas maiores de idade podem ter cadastro)");
                     log.warn("Idade do cliente invalida");
                 } else if (EditarCliente.getTxtCpf().getLength() < 11) {
                     EditarCliente.mostarNaTela("Quantidade de caracteres do cpf invalido", "Por favor, preencha o campo cpf corretamente");
-                    log.warn("Quantidade de caracteres invalido");
+                    log.warn("Quantidade de caracteres do cpf invalido");
                 } else if (EditarCliente.getTxtCep().getLength() < 8) {
                     EditarCliente.mostarNaTela("Quantidade de caracteres do cep invalido", "Por favor, preencha o campo cep corretamente");
-                    log.warn("Quantidade de caracteres invalido");
+                    log.warn("Quantidade de caracteres do cep invalido");
                 } else if (EditarCliente.emailInvalido()) {
                     EditarCliente.mostarNaTela("E-mail Inválido", "Por favor, digite um e-mail no formato correto (exemplo@dominio.com).");
                     log.warn("E-mail Inválido");
@@ -598,11 +571,6 @@ public class EditarCliente {
                     Alert concluido = new Alert(Alert.AlertType.INFORMATION);
                     concluido.setTitle("Cadastro Finalizado");
                     concluido.setHeaderText("Imprimindo Cadastro");
-                    //String nomes = "";
-                /*for(Pet pet : CadastroPet.getListaPet()){
-                   nomes += pet.getNome() + ", ";
-                }*/
-                    //concluido.setContentText(c.getNome() + " seus(s) pet(s) " + nomes + "foi cadastrado com Sucesso");
 
                     concluido.setContentText(exibirDados(c1));
                     concluido.showAndWait();
@@ -616,14 +584,12 @@ public class EditarCliente {
             }
         });
 
-
         VBox vertical = new VBox(50);
         vertical.setAlignment(Pos.CENTER);
         vertical.getChildren().addAll(header, cadastro, rodape);
 
-
         String num2 = String.valueOf(c1.getEndereco().getNumero());
-        txtCpf.setText(Home.getTxtCpf().getText());
+        txtCpf.setText(c1.getCpf());
         txtBairro.setText(c1.getEndereco().getBairro());
         txtCep.setText(c1.getEndereco().getCep());
         txtDdd.setText(c1.getTelefone().getDdd());
@@ -673,13 +639,11 @@ public class EditarCliente {
 
         VBox.setVgrow(painelDeAbas, Priority.ALWAYS);
 
-
         return verticalHome;
     }
 
     public static Cliente pegarDados(List<Pet> p) {
         String nome = txtNome.getText();
-
         String cpf = txtCpf.getText();
         String email = txtEmail.getText();
         String telefone = txtTelefone.getText();
@@ -695,50 +659,6 @@ public class EditarCliente {
         return new Cliente(nome, dpIdade.getValue(), cpf, e, t, email, p);
     }
 
-    public static TextArea getAreaComplemento() {
-        return areaComplemento;
-    }
-
-    public static TextField getTxtBairro() {
-        return txtBairro;
-    }
-
-    public static TextField getTxtCep() {
-        return txtCep;
-    }
-
-    public static TextField getTxtCpf() {
-        return txtCpf;
-    }
-
-    public static TextField getTxtEmail() {
-        return txtEmail;
-    }
-
-    public static DatePicker getDpIdade() {
-        return dpIdade;
-    }
-
-    public static TextField getTxtNome() {
-        return txtNome;
-    }
-
-    public static TextField getTxtNumero() {
-        return txtNumero;
-    }
-
-    public static TextField getTxtRua() {
-        return txtRua;
-    }
-
-    public static TextField getTxtTelefone() {
-        return txtTelefone;
-    }
-
-    public static TextField getTxtDdd() {
-        return txtDdd;
-    }
-
     public static void setC(Cliente c) {
         EditarCliente.c = c;
     }
@@ -752,40 +672,27 @@ public class EditarCliente {
     }
 
     public static boolean temCampoVazioEndereco() {
-        if (txtBairro.getText().trim().isEmpty() || txtCep.getText().trim().isEmpty() || txtNumero.getText().trim().isEmpty() || txtRua.getText().trim().isEmpty()) {
-            return true;
-        }
-        return false;
+        return txtBairro.getText().trim().isEmpty() || txtCep.getText().trim().isEmpty() || txtNumero.getText().trim().isEmpty() || txtRua.getText().trim().isEmpty();
     }
 
     public static boolean temCampoVazioDados() {
-        if (txtCpf.getText().trim().isEmpty() || txtDdd.getText().trim().isEmpty() || txtEmail.getText().trim().isEmpty() || dpIdade.getValue() == null || txtNome.getText().trim().isEmpty() || txtTelefone.getText().trim().isEmpty()) {
-            return true;
-        }
-        return false;
+        return txtCpf.getText().trim().isEmpty() || txtDdd.getText().trim().isEmpty() || txtEmail.getText().trim().isEmpty() || dpIdade.getValue() == null || txtNome.getText().trim().isEmpty() || txtTelefone.getText().trim().isEmpty();
     }
-
 
     public static boolean emailInvalido() {
         String emailDigitado = txtEmail.getText().trim();
         String regraEmail = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
 
-        if (!emailDigitado.matches(regraEmail)) {
-            return true;
-        }
-        return false;
+        return !emailDigitado.matches(regraEmail);
     }
 
     public static String exibirDados(Cliente c) {
-        String exibirDados = "";
-        exibirDados = c.exibeDados();
+        StringBuilder exibirDados = new StringBuilder();
+        exibirDados = new StringBuilder(c.exibeDados());
         for (Pet pet : c.getPet()) {
-            exibirDados += "\nPet " + (c.getPet().indexOf(pet) + 1) + pet.exibePet();
+            exibirDados.append("\nPet ").append(c.getPet().indexOf(pet) + 1).append(pet.exibePet());
         }
-        return exibirDados;
+        return exibirDados.toString();
     }
 
-    public static Cliente getC() {
-        return c;
-    }
 }

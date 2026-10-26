@@ -18,7 +18,7 @@ import java.util.List;
 
 @Slf4j
 public class AddPet {
-    public static void abrirJanela(){
+    public static void abrirJanela() {
         Stage popup = new Stage();
         popup.setTitle("Adicionar novo Pet");
 
@@ -57,7 +57,7 @@ public class AddPet {
         });
 
         String cssGlobal = App.class.getResource("/styles/style.css").toExternalForm();
-            principal.getStylesheets().add(cssGlobal);
+        principal.getStylesheets().add(cssGlobal);
 
         Scene pop = new Scene(principal, 700, 600);
         popup.setScene(pop);

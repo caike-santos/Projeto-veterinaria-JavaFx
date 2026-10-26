@@ -22,10 +22,10 @@ public abstract class Pessoa {
     @Past(message = "A data tem que estar no passado")
     private LocalDate dataNascimento;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     @NotBlank(message = "O cpf é obrigatório")
     @CPF(message = "formato do cpf invalido")
-    private String cpf = "null";
+    private String cpf;
 
     @Valid
     @Embedded
@@ -40,7 +40,7 @@ public abstract class Pessoa {
     @Column(nullable = false)
     @NotBlank(message = "O e-mail é obrigatório")
     @Email(message = "formato de e-mail invalido")
-    private String email = "null";
+    private String email;
 
     public Pessoa(String nome, LocalDate dataNascimento, String cpf, Endereco endereco, Telefone telefone, String email){
         this.nome = nome;
@@ -52,16 +52,16 @@ public abstract class Pessoa {
     }
     public Pessoa(){};
 
-    public int getIdade() {
-        if (this.dataNascimento == null) return 0;
+    public static int getIdade(LocalDate dataNascimento) {
+        if (dataNascimento == null) return 0;
         LocalDate dataAtual = LocalDate.now();
-        Period periodo = Period.between(this.dataNascimento, dataAtual);
+        Period periodo = Period.between(dataNascimento, dataAtual);
         return periodo.getYears();
     }
     public String exibeDados(){
         return "\nDados da pessoa:" +
         "\nNome: " + getNome() +
-        "\nIdade: " + getIdade() +
+        "\nIdade: " + getIdade(this.getDataNascimento()) +
         "\ncpf: " + getCpf() +
         this.endereco.exibeEndereço() +
         this.telefone.exibeTelefone() +

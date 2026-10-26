@@ -26,7 +26,7 @@ import javafx.scene.layout.VBox;
 
 public class Agendamentos {
     public static Parent criarCena() {
-        
+
         Label lblTitulo = new Label("Agendamentos");
         lblTitulo.getStyleClass().add("titulo");
 
@@ -34,15 +34,15 @@ public class Agendamentos {
         sanfonaAgendas.setMaxWidth(500);
 
         // 1. Limpa a sanfona velha
-        sanfonaAgendas.getPanes().clear(); 
+        sanfonaAgendas.getPanes().clear();
 
         // 2. ORDENA O BANCO DE DADOS EM data e hora!
         AgendaService agendaService = App.getBean(AgendaService.class);
         List<Agenda> agendas = agendaService.listarAgendasOrdemDataHora(EditarCliente.getC());
-    // 2. Passa por cada agenda no banco de dados
-        if(agendas.isEmpty()){
+        // 2. Passa por cada agenda no banco de dados
+        if (agendas.isEmpty()) {
             sanfonaAgendas.getPanes().add(new TitledPane("Nenhum agendamento encontrado", new VBox()));
-        }else {
+        } else {
             int i = 0;
             for (Agenda agenda : agendas) {
                 // 3. Cria a "caixa" (VBox) que vai ficar ESCONDIDA dentro da sanfona
@@ -58,7 +58,6 @@ public class Agendamentos {
                 // Adiciona as infos da agenda
                 detalhes.getChildren().add(new Label(agenda.exibirAgenda()));
 
-
                 // 4. Cria a "Barra" (TitledPane) que fica visível, colocando a VBox dentro dela!
                 TitledPane painelCliente = new TitledPane(agenda.getData().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " - " + agenda.getHora().format(DateTimeFormatter.ofPattern("HH:mm")), detalhes);
                 painelCliente.setMaxHeight(25);
@@ -69,31 +68,31 @@ public class Agendamentos {
             }
         }
 
-    ScrollPane rolagem = new ScrollPane();
+        ScrollPane rolagem = new ScrollPane();
         rolagem.setContent(sanfonaAgendas);
         rolagem.setFitToWidth(true);
         rolagem.addEventFilter(ScrollEvent.SCROLL, evento -> {
-    
-    // 1. Defina a sua velocidade aqui (Quanto maior, mais rápido). 
-    // O valor 0.003 costuma ser excelente, mas você pode testar 0.005, 0.01, etc.
-    double velocidade = 0.005; 
-    
-    // 2. Pega a força que o usuário girou a rodinha e multiplica pela sua velocidade
-    double movimento = evento.getDeltaY() * velocidade;
-    
-    // 3. Pega a posição atual da barra de rolagem (Vvalue) e subtrai o movimento
-    rolagem.setVvalue(rolagem.getVvalue() - movimento);
-    
-    // 4. A mágica: "Mata" o evento padrão do JavaFX para impedir que ele role super devagar junto com o nosso
-    evento.consume(); 
-});
+
+            // 1. Defina a sua velocidade aqui (Quanto maior, mais rápido).
+            // O valor 0.003 costuma ser excelente, mas você pode testar 0.005, 0.01, etc.
+            double velocidade = 0.005;
+
+            // 2. Pega a força que o usuário girou a rodinha e multiplica pela sua velocidade
+            double movimento = evento.getDeltaY() * velocidade;
+
+            // 3. Pega a posição atual da barra de rolagem (Vvalue) e subtrai o movimento
+            rolagem.setVvalue(rolagem.getVvalue() - movimento);
+
+            // 4. A mágica: "Mata" o evento padrão do JavaFX para impedir que ele role super devagar junto com o nosso
+            evento.consume();
+        });
         rolagem.setMaxWidth(500);
-    VBox coluna = new VBox(25);
+        VBox coluna = new VBox(25);
         coluna.getChildren().addAll(rolagem);
         coluna.setPadding(new Insets(30, 20, 20, 20));
         coluna.setAlignment(Pos.CENTER);
-        VBox.setVgrow(rolagem,  Priority.ALWAYS);
-        VBox.setVgrow(sanfonaAgendas,  Priority.ALWAYS);
+        VBox.setVgrow(rolagem, Priority.ALWAYS);
+        VBox.setVgrow(sanfonaAgendas, Priority.ALWAYS);
 
         Button btnCadastrar = new Button("Novo Agendamento");
         GridPane grid = new GridPane();
@@ -115,11 +114,11 @@ public class Agendamentos {
         HBox linhaTitulo = new HBox();
         linhaTitulo.getChildren().add(lblTitulo);
         linhaTitulo.setAlignment(Pos.CENTER);
-        
+
         HBox linhaConteudo = new HBox();
         linhaConteudo.getChildren().add(coluna);
         linhaConteudo.setAlignment(Pos.CENTER);
-        
+
         btnCadastrar.setOnAction(e -> {
             CadastrarAgenda.abrirJanela();
             App.inserirCena(EditarCliente.criarCena(EditarCliente.getC()));
@@ -129,5 +128,5 @@ public class Agendamentos {
             App.inserirCena(EditarCliente.criarCena(EditarCliente.getC()));
         });
         return new VBox(20, linhaTitulo, linhaConteudo, linhaBotoes);
-}
+    }
 }

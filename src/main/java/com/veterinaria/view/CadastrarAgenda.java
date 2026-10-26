@@ -6,9 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import com.veterinaria.App;
-import com.veterinaria.model.Agenda;
-import com.veterinaria.model.Funcionario;
-import com.veterinaria.model.Servico;
+import com.veterinaria.model.*;
 import com.veterinaria.service.AgendaService;
 import com.veterinaria.service.FuncionarioService;
 import com.veterinaria.service.ServicoService;
@@ -38,10 +36,11 @@ public class CadastrarAgenda {
     private static DatePicker data;
     private static TextField txtHora;
     private static ComboBox<String> cbmFuncionario;
+    private static ComboBox<String> cbmPet;
 
     public static void abrirJanela() {
         Stage popup = new Stage();
-        popup.setTitle("Remover Agenda");
+        popup.setTitle("Cadastrar Agenda");
 
         Image logo = new Image(CadastrarAgenda.class.getResource("/imagens/pet.png").toExternalForm());
         ImageView visulogoCadastro = new ImageView(logo);
@@ -63,7 +62,9 @@ public class CadastrarAgenda {
         ServicoService servicoService = App.getBean(ServicoService.class);
         List<Servico> servicos = servicoService.listarServicos();
         for (Servico servico : servicos) {
-            cbmServico.getItems().add(servico.getNome());
+            if(servico.getProfissao() != Profissao.Atendente){
+                cbmServico.getItems().add(servico.getNome());
+            }
         }
         cbmServico.setPromptText("Selecione o serviço");
         cbmServico.setMaxWidth(250);
@@ -179,15 +180,31 @@ public class CadastrarAgenda {
 
         // Listener para atualizar os funcionários quando um serviço é selecionado
         cbmServico.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            cbmFuncionario.getItems().clear(); // Limpa os funcionários anteriores
-            FuncionarioService funcionarioService = App.getBean(FuncionarioService.class);
+            try {
+                cbmFuncionario.getItems().clear(); // Limpa os funcionários anteriores
+                FuncionarioService funcionarioService = App.getBean(FuncionarioService.class);
 
-            if (newVal != null) { // Verifica se um serviço foi selecionado
-                for (Funcionario funcionario : funcionarioService.buscarPorServico(newVal)) {
-                    cbmFuncionario.getItems().add(funcionario.getNome());
+                if (newVal != null) { // Verifica se um serviço foi selecionado
+                    for (Funcionario funcionario : funcionarioService.buscarPorServico(newVal)) {
+                        cbmFuncionario.getItems().add(funcionario.getNome());
+                    }
                 }
+            }catch (IllegalArgumentException | ConstraintViolationException e) {
+                log.warn("Erro de validação: {}", e.getMessage());
+            } catch (Exception e) {
+                log.error("Erro inesperado:", e);
             }
+
         });
+
+        Label lblPet = new Label("Serviço:");
+        cbmPet = new ComboBox<>();
+
+        for (Pet pets : EditarCliente.getC().getPet()) {
+            cbmPet.getItems().add(pets.getNome());
+        }
+        cbmPet.setPromptText("Selecione o Pet");
+        cbmPet.setMaxWidth(250);
 
         Button btnCadastrar = new Button("Cadastrar");
         HBox linhaBtn = new HBox();
@@ -226,16 +243,14 @@ public class CadastrarAgenda {
                 data.setValue(null);
             }
             try {
-                if (cbmServico.getSelectionModel().isEmpty() || data.getValue() == null || txtHora.getText().trim().isEmpty() || cbmFuncionario.getSelectionModel().isEmpty() || data == null) {
-                    CadastroCliente.mostarNaTela("Faltam dados do Agendamento!", "Por favor, preencha todos os campos para cadastrar o agendamento.");
-                   return;
+                if (cbmServico.getSelectionModel().isEmpty() || cbmPet.getSelectionModel().isEmpty() || data == null ||  data.getValue() == null || txtHora.getText().trim().isEmpty() || cbmFuncionario.getSelectionModel().isEmpty()) {
+                    EditarCliente.mostarNaTela("Faltam dados do Agendamento!", "Por favor, preencha todos os campos para cadastrar o agendamento.");
+                    return;
                 } else {
                     // Aceita formatos como "9:00", "09:00", "9:30:00", "09:30:00"
                     DateTimeFormatter[] formatadores = {
                             DateTimeFormatter.ofPattern("H:mm"),      // 9:00
                             DateTimeFormatter.ofPattern("HH:mm"),     // 09:00
-                            DateTimeFormatter.ofPattern("H:mm:ss"),   // 9:00:00
-                            DateTimeFormatter.ofPattern("HH:mm:ss")   // 09:00:00
                     };
                     LocalTime hora = null;
                     String horaTexto = txtHora.getText().trim();
@@ -249,16 +264,16 @@ public class CadastrarAgenda {
                     }
 
                     if (hora == null) {
-                        CadastroCliente.mostarNaTela("Formato de hora inválido!", "Use o formato: HH:mm ou HH:mm:ss\nExemplos: 09:00 ou 09:30:00");
+                        EditarCliente.mostarNaTela("Formato de hora inválido!", "Use o formato: HH:mm ou HH:mm:ss\nExemplos: 09:00 ou 09:30:00");
                         return;
                     }
 
                     if (data.getValue().isBefore(LocalDate.now())) {
-                        CadastroCliente.mostarNaTela("Data inválida!", "A data do agendamento não pode ser anterior a hoje (" + LocalDate.now() + ").");
+                        EditarCliente.mostarNaTela("Data inválida!", "A data do agendamento não pode ser anterior a hoje (" + LocalDate.now() + ").");
                         return;
                     }
                     FuncionarioService funcionarioService = App.getBean(FuncionarioService.class);
-                    Agenda novaAgenda = new Agenda(data.getValue(), hora, EditarCliente.getC(), servicoService.listarServicos().get(cbmServico.getSelectionModel().getSelectedIndex()),  funcionarioService.buscarPorServico(cbmServico.getSelectionModel().getSelectedItem())
+                    Agenda novaAgenda = new Agenda(data.getValue(), hora, EditarCliente.getC(), EditarCliente.getC().getPet().get(cbmPet.getSelectionModel().getSelectedIndex()), servicoService.listarServicos().get(cbmServico.getSelectionModel().getSelectedIndex()), funcionarioService.buscarPorServico(cbmServico.getSelectionModel().getSelectedItem())
                             .get(cbmFuncionario.getSelectionModel().getSelectedIndex()));
 
                     AgendaService agendaService = App.getBean(AgendaService.class);
@@ -288,12 +303,6 @@ public class CadastrarAgenda {
         Alert concluido = new Alert(Alert.AlertType.INFORMATION);
         concluido.setTitle("Cadastro Finalizado");
         concluido.setHeaderText("Imprimindo Cadastro");
-        //String nomes = "";
-                /*for(Pet pet : CadastroPet.getListaPet()){
-                   nomes += pet.getNome() + ", ";
-                }*/
-        //concluido.setContentText(c.getNome() + " seus(s) pet(s) " + nomes + "foi cadastrado com Sucesso");
-
         concluido.setContentText("Agendamento para o serviço " + cbmServico.getSelectionModel().getSelectedItem() + " no dia " + data.getValue().toString() + " às " + txtHora.getText().trim() + " com o funcionário " + cbmFuncionario.getSelectionModel().getSelectedItem() + " foi cadastrado com Sucesso");
         return concluido;
     }
