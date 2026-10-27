@@ -1,17 +1,21 @@
 package com.veterinaria.model;
 
+import com.veterinaria.utils.Datas;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.validator.constraints.br.CPF;
 
 import java.time.LocalDate;
 import java.time.Period;
 @MappedSuperclass
-@Data
+@Getter
+@Setter
 public abstract class Pessoa {
     @Column(nullable = false)
     @NotBlank(message = "O nome é obrigatório")
@@ -52,16 +56,10 @@ public abstract class Pessoa {
     }
     public Pessoa(){};
 
-    public static int getIdade(LocalDate dataNascimento) {
-        if (dataNascimento == null) return 0;
-        LocalDate dataAtual = LocalDate.now();
-        Period periodo = Period.between(dataNascimento, dataAtual);
-        return periodo.getYears();
-    }
     public String exibeDados(){
         return "\nDados da pessoa:" +
         "\nNome: " + getNome() +
-        "\nIdade: " + getIdade(this.getDataNascimento()) +
+        "\nIdade: " + Datas.idade(this.getDataNascimento()) +
         "\ncpf: " + getCpf() +
         this.endereco.exibeEndereço() +
         this.telefone.exibeTelefone() +

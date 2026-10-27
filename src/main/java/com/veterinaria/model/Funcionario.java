@@ -7,17 +7,23 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 @Entity(name = "funcionarios")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "tipo_funcionario")
@@ -27,10 +33,11 @@ public abstract class Funcionario extends Pessoa {
     private static final PasswordEncoder ENCODER = new BCryptPasswordEncoder();
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @EqualsAndHashCode.Include
     private UUID id;
 
     @Positive
-    private float salario;
+    private BigDecimal salario;
 
     @NotNull(message = "A profissão é obrigatória")
     @Enumerated(EnumType.STRING)
@@ -51,9 +58,8 @@ public abstract class Funcionario extends Pessoa {
     @Version
     private Long versao;
 
-    public Funcionario(String nome, LocalDate dataNasc, String cpf, Endereco endereco, Telefone telefone, String email, UUID id, float salario, Profissao profissao, List<Servico> funcoes, String usuario, String senha) {
+    public Funcionario(String nome, LocalDate dataNasc, String cpf, Endereco endereco, Telefone telefone, String email, BigDecimal salario, Profissao profissao, List<Servico> funcoes, String usuario, String senha) {
         super(nome, dataNasc, cpf, endereco, telefone, email);
-        this.id = id;
         this.salario = salario;
         this.profissao = profissao;
         this.funcoes = funcoes;

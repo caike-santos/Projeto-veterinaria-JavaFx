@@ -1,93 +1,43 @@
 package com.veterinaria.view;
 
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.veterinaria.App;
 import com.veterinaria.model.Cliente;
 import com.veterinaria.model.Pet;
 import com.veterinaria.service.ClienteService;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
+import com.veterinaria.utils.Componentes;
 import javafx.scene.Parent;
-import javafx.scene.control.Accordion;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
-import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 public class ExibirClientes {
     public static Parent criarCena() {
-        Accordion sanfonaClientes = new Accordion();
-        sanfonaClientes.setMaxWidth(500);
-
-        // 1. Limpa a sanfona velha
-        sanfonaClientes.getPanes().clear();
         ClienteService clienteService = App.getBean(ClienteService.class);
-
-        // 3. ORDENA O BANCO DE DADOS EM ORDEM ALFABÉTICA!
         List<Cliente> clientes = clienteService.listarClienteOrdemAlfabetica();
+        List<TitledPane> paineis = new ArrayList<>();
 
-        // 4. Passa por cada cliente no banco de dados
         for (Cliente cliente : clientes) {
-
-            // 5. Cria a "caixa" (VBox) que vai ficar ESCONDIDA dentro da sanfona
             VBox detalhes = new VBox(5);
-
-            // Adiciona as infos do dono
             detalhes.getChildren().add(new Label(cliente.exibeDados()));
-            // Ajuste conforme os seus métodos
 
-            // Adiciona um título para Pets
             Label tituloPets = new Label("\n🐾 Pets do Cliente:");
-            tituloPets.setStyle("-fx-font-weight: bold;"); // Deixa negrito
+            tituloPets.setStyle("-fx-font-weight: bold;");
             detalhes.getChildren().add(tituloPets);
 
-            // Lista os pets dentro dessa mesma caixa
-            if (cliente.getPet().isEmpty()) {
+            if (cliente.getPets().isEmpty()) {
                 detalhes.getChildren().add(new Label("Nenhum pet cadastrado."));
             } else {
-                for (Pet p : cliente.getPet()) {
-                    detalhes.getChildren().add(new Label("\nPet " + (cliente.getPet().indexOf(p) + 1) + ":\n" + p.exibePet()));
+                for (Pet p : cliente.getPets()) {
+                    detalhes.getChildren().add(new Label("\nPet " + (cliente.getPets().indexOf(p) + 1) + ":\n" + p.exibePet()));
                 }
             }
 
-            // 6. Cria a "Barra" (TitledPane) que fica visível, colocando a VBox dentro dela!
-            TitledPane painelCliente = new TitledPane(cliente.getNome(), detalhes);
-            painelCliente.setMaxHeight(25);
-
-            // 7. Adiciona essa barra na sanfona principal
-            sanfonaClientes.getPanes().add(painelCliente);
-
-
+            paineis.add(new TitledPane(cliente.getNome(), detalhes));
         }
-        ScrollPane rolagem = new ScrollPane();
-        rolagem.setContent(sanfonaClientes);
-        rolagem.setFitToWidth(true);
-        rolagem.addEventFilter(ScrollEvent.SCROLL, evento -> {
 
-            // 1. Defina a sua velocidade aqui (Quanto maior, mais rápido).
-            // O valor 0.003 costuma ser excelente, mas você pode testar 0.005, 0.01, etc.
-            double velocidade = 0.005;
-
-            // 2. Pega a força que o usuário girou a rodinha e multiplica pela sua velocidade
-            double movimento = evento.getDeltaY() * velocidade;
-
-            // 3. Pega a posição atual da barra de rolagem (Vvalue) e subtrai o movimento
-            rolagem.setVvalue(rolagem.getVvalue() - movimento);
-
-            // 4. A mágica: "Mata" o evento padrão do JavaFX para impedir que ele role super devagar junto com o nosso
-            evento.consume();
-        });
-        rolagem.setMaxWidth(500);
-        VBox coluna = new VBox(25);
-        coluna.getChildren().addAll(rolagem);
-        coluna.setPadding(new Insets(30, 20, 20, 20));
-        coluna.setAlignment(Pos.CENTER);
-        VBox.setVgrow(rolagem, Priority.ALWAYS);
-        VBox.setVgrow(sanfonaClientes, Priority.ALWAYS);
-        return coluna;
+        return Componentes.listaSanfona(paineis);
     }
 }

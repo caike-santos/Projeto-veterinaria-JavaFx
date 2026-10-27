@@ -10,8 +10,10 @@ import com.veterinaria.App;
 import com.veterinaria.model.Genero;
 import com.veterinaria.model.Pet;
 import com.veterinaria.service.PetService;
-import jakarta.validation.ConstraintViolationException;
-import javafx.util.StringConverter;
+import com.veterinaria.utils.Acoes;
+import com.veterinaria.utils.Alertas;
+import com.veterinaria.utils.Componentes;
+import com.veterinaria.utils.Datas;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -20,8 +22,6 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -38,7 +38,7 @@ public class CadastroPet {
     @Getter
     private static TextField txtRaca;
     @Getter
-    private static ComboBox<String> cbmSexo;
+    private static ComboBox<Genero> cbmSexo;
     @Getter
     private static List<Pet> listaPet = new ArrayList<>();
     @Getter
@@ -47,20 +47,7 @@ public class CadastroPet {
     private static VBox layout;
 
     public static Parent criarCena() {
-        //header
-        Image logo = new Image(CadastroPet.class.getResource("/imagens/pet.png").toExternalForm());
-        ImageView visulogoCadastro = new ImageView(logo);
-        visulogoCadastro.setFitHeight(60);
-        visulogoCadastro.setPreserveRatio(true);
-
-        Label lblTituloCadastro = new Label("Cadastro do Pet");
-        lblTituloCadastro.getStyleClass().add("titulo");
-
-
-        HBox header = new HBox(20);
-        header.getChildren().addAll(visulogoCadastro, lblTituloCadastro);
-        header.getStyleClass().add("header");
-        //fimHeader
+        HBox header = Componentes.header("Cadastro do Pet");
 
         //formulario
         GridPane gridPet = new GridPane();
@@ -75,80 +62,7 @@ public class CadastroPet {
         Label lblIdade = new Label("Data de Nascimento:");
         dpIdade = new DatePicker();
         dpIdade.setMaxWidth(150);
-        dpIdade.setPromptText("dd/mm/aaaa");
-        // 1. Pega a "caixinha de texto" que fica dentro do DatePicker
-        TextField editorData = dpIdade.getEditor();
-
-        // 2. Cria o "Ouvinte" que espia tudo o que é digitado em tempo real
-        editorData.textProperty().addListener((observavel, valorAntigo, valorNovo) -> {
-
-            if (valorNovo == null) return;
-
-            // Remove tudo que não for número (Impede o usuário de digitar letras)
-            String apenasNumeros = valorNovo.replaceAll("[^\\d]", "");
-
-            // Limita a 8 números no máximo (ddMMyyyy)
-            if (apenasNumeros.length() > 8) {
-                apenasNumeros = apenasNumeros.substring(0, 8);
-            }
-
-            // Monta o texto colocando a barra nas posições certas
-            StringBuilder formatado = new StringBuilder();
-            for (int i = 0; i < apenasNumeros.length(); i++) {
-                if (i == 2 || i == 4) {
-                    formatado.append("/");
-                }
-                formatado.append(apenasNumeros.charAt(i));
-            }
-
-            // Se o texto digitado for diferente da máscara, ele substitui e joga o cursor pro final
-            if (!valorNovo.contentEquals(formatado)) {
-
-                // O Platform.runLater é um truque para o JavaFX não bugar a posição do cursor no teclado
-                javafx.application.Platform.runLater(() -> {
-                    editorData.setText(formatado.toString());
-                    editorData.positionCaret(formatado.length());
-                });
-            }
-        });
-        DateTimeFormatter formatoBR = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-// 2. Coloca o tradutor no DatePicker
-        dpIdade.setConverter(new StringConverter<LocalDate>() {
-
-            // Transforma a Data (Objeto) em Texto para mostrar na tela
-            @Override
-            public String toString(LocalDate data) {
-                if (data != null) {
-                    return formatoBR.format(data);
-                }
-                return "";
-            }
-
-            // Transforma o Texto digitado no teclado em Data (Objeto)
-            @Override
-            public LocalDate fromString(String texto) {
-                if (texto != null && !texto.trim().isEmpty()) {
-                    try {
-                        // 1. Primeiro tenta ler a data no formato BR
-                        LocalDate dataDigitada = LocalDate.parse(texto, formatoBR);
-
-                        // 2. A MÁGICA: Verifica se a data exata cai no futuro
-                        if (dataDigitada.isAfter(LocalDate.now())) {
-                            return null; // A data é do futuro (idade negativa)! Devolve nulo para barrar.
-                        }
-
-                        // 3. Se a data for válida e no passado/hoje, devolve ela pronta!
-                        return dataDigitada;
-
-                    } catch (Exception e) {
-                        // Cai aqui se digitar letras ou 32/15/2020
-                        return null;
-                    }
-                }
-                return null;
-            }
-        });
+        Datas.configurarPickerBR(dpIdade, false);
 
         Label lblRaca = new Label("Raça do pet:");
         txtRaca = new TextField();
@@ -156,7 +70,8 @@ public class CadastroPet {
 
         Label lblSexo = new Label("Sexo do pet:");
         cbmSexo = new ComboBox<>();
-        cbmSexo.getItems().addAll("Macho", "Femea");
+        cbmSexo.getItems().addAll(Genero.values());
+        Componentes.configurarComboBox(cbmSexo, Genero::name);
         cbmSexo.getSelectionModel().selectFirst();
 
         gridPet.add(lblNome, 0, 0);
@@ -178,45 +93,38 @@ public class CadastroPet {
         cadastro.setMaxWidth(300);
         cadastro.setPrefHeight(150);
 
-        btnCadastrar.setOnAction(evento ->
-        {
+        btnCadastrar.setOnAction(evento -> Acoes.executar(() -> {
             try {
                 dpIdade.setValue(dpIdade.getConverter().fromString(dpIdade.getEditor().getText()));
             } catch (Exception e) {
                 dpIdade.setValue(null); // Se deu erro na conversão, vira nulo para ser barrado no if
             }
 
-            try {
-                if (temCampoVazioDados()) {
-                    EditarCliente.mostarNaTela("Faltam dados do pet!", "Por favor, preencha todos os campos.");
-                    log.warn("Dados faltantes");
-                    return;
-                }
-                PetService petService = App.getBean(PetService.class);
-                Pet pet = petService.cadastrarPet(
-                        txtNome.getText().trim(),
-                        dpIdade.getValue(),
-                        cbmSexo.getValue(),
-                        txtRaca.getText().trim()
-                );
-
-                listaPet.add(pet);
-
-                cadastro.appendText("\nCadastro concluído...\n");
-                cadastro.appendText("nome: " + pet.getNome() + "\n");
-                cadastro.appendText("idade: " + pet.getIdade() + "\n");
-                cadastro.appendText("raça: " + pet.getRaca() + "\n");
-                cadastro.appendText("sexo: " + pet.getGenero() + "\n");
-
-                dpIdade.setValue(null);
-                txtNome.clear();
-                txtRaca.clear();
-            } catch (IllegalArgumentException | ConstraintViolationException e) {
-                log.warn("Erro de validação: {}", e.getMessage());
-            } catch (Exception e) {
-                log.error("Erro inesperado:", e);
+            if (temCampoVazioDados()) {
+                Alertas.erro("Faltam dados do pet!", "Por favor, preencha todos os campos.");
+                log.warn("Dados faltantes");
+                return;
             }
-        });
+            PetService petService = App.getBean(PetService.class);
+            Pet pet = petService.cadastrarPet(
+                    txtNome.getText().trim(),
+                    dpIdade.getValue(),
+                    cbmSexo.getValue(),
+                    txtRaca.getText().trim()
+            );
+
+            listaPet.add(pet);
+
+            cadastro.appendText("\nCadastro concluído...\n");
+            cadastro.appendText("nome: " + pet.getNome() + "\n");
+            cadastro.appendText("idade: " + Datas.idade(pet.getDataNascimento()) + "\n");
+            cadastro.appendText("raça: " + pet.getRaca() + "\n");
+            cadastro.appendText("sexo: " + pet.getGenero() + "\n");
+
+            dpIdade.setValue(null);
+            txtNome.clear();
+            txtRaca.clear();
+        }));
         //fimCadastro
 
         //montandoCena

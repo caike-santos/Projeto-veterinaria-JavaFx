@@ -4,15 +4,10 @@ import com.veterinaria.model.Cliente;
 import com.veterinaria.model.Genero;
 import com.veterinaria.model.Pet;
 import com.veterinaria.repository.ClienteRepository;
-import com.veterinaria.repository.PetRepository;
-import com.veterinaria.view.CadastroCliente;
-import com.veterinaria.view.CadastroPet;
-import com.veterinaria.view.EditarCliente;
-import jakarta.transaction.Transactional;
-import javafx.scene.control.Alert;
-import lombok.extern.java.Log;
+import com.veterinaria.utils.Datas;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,61 +18,45 @@ import java.util.List;
 public class PetService {
     private final ClienteRepository clienteRepository;
 
-    public PetService(ClienteRepository clienteRepository){
+    public PetService(ClienteRepository clienteRepository) {
         this.clienteRepository = clienteRepository;
     }
 
-    public Pet cadastrarPet(String nome, LocalDate dataDeNascimento, String genero, String raca){
-        if(dataDeNascimento == null){
-            EditarCliente.mostarNaTela("Data de nascimento inválida!", "Por favor, preencha a data de nascimento com uma data válida.");
-            throw new IllegalArgumentException("Data invalida");
+    public Pet cadastrarPet(String nome, LocalDate dataDeNascimento, Genero genero, String raca) {
+        if (dataDeNascimento == null) {
+            throw new IllegalArgumentException("Por favor, preencha a data de nascimento com uma data válida.");
         }
-        else{
-            Genero gen = switch (genero) {
-                case "Macho" -> Genero.Macho;
-                case "Femea" -> Genero.Femea;
-                default -> {
-                    EditarCliente.mostarNaTela("Genero invalido", "Por favor, preencha com o genero correto para cadastrar o pet.");
-                    throw new IllegalArgumentException("Genero invalido");
-                }
-            };
+        if (genero == null) {
+            throw new IllegalArgumentException("Por favor, preencha com o gênero correto para cadastrar o pet.");
+        }
 
-            Pet pet = new Pet(nome, dataDeNascimento, gen, raca);
-            int idadeNum = pet.getIdade();
-            if(idadeNum < 0 || idadeNum > 100){
-                EditarCliente.mostarNaTela("Idade do pet inválida!", "Por favor, preencha a data de nascimento com uma data válida. O pet deve ter entre 0 e 100 anos.");
-                throw new IllegalArgumentException("Idade inválida");
-            }
-            log.info("\nnome: "+ pet.getNome() +
-                    "\nidade: "+ pet.getIdade()  +
-                    "\nraca: "+ pet.getRaca() +
-                    "\nsexo: "+ pet.getGenero());
-            return pet;
+        Pet pet = new Pet(nome, dataDeNascimento, genero, raca);
+        int idadeNum = Datas.idade(pet.getDataNascimento());
+        if (idadeNum < 0 || idadeNum > 100) {
+            throw new IllegalArgumentException("Idade do pet inválida! O pet deve ter entre 0 e 100 anos.");
         }
+        log.info("\nnome: {}\nidade: {}\nraca: {}\nsexo: {}", pet.getNome(), Datas.idade(pet.getDataNascimento()), pet.getRaca(), pet.getGenero());
+        return pet;
     }
 
-    public Cliente adicionarPet(List<Pet> listaPet, Cliente c){
-
-        if(listaPet.isEmpty()){
-            EditarCliente.mostarNaTela("Nenhum cadastro realizado", "Faça pelo menos um cadastro para poder finalizado");
-            throw new IllegalArgumentException("Nenhum cadastro foi realizado");
+    public Cliente adicionarPet(List<Pet> listaPet, Cliente c) {
+        if (listaPet.isEmpty()) {
+            throw new IllegalArgumentException("Faça pelo menos um cadastro de pet para poder finalizar.");
         }
-        for(Pet p : listaPet){
-            c.getPet().add(p);
+        for (Pet p : listaPet) {
+            c.getPets().add(p);
         }
         log.info("Pet adicionado com sucesso!");
         return clienteRepository.save(c);
-
     }
 
-    public Cliente removerPet(String nomePet, Cliente c){
-        for (Pet p : c.getPet()) {
+    public Cliente removerPet(String nomePet, Cliente c) {
+        for (Pet p : c.getPets()) {
             if (p.getNome().equalsIgnoreCase(nomePet)) {
-                c.getPet().remove(p);
+                c.getPets().remove(p);
                 return clienteRepository.save(c);
             }
         }
-            EditarCliente.mostarNaTela("Pet não encontrado", "O pet digitado não foi encontrado.");
-            throw new IllegalArgumentException("Nenhum pet foi encontrado com esse nome");
+        throw new IllegalArgumentException("O pet digitado não foi encontrado.");
     }
 }

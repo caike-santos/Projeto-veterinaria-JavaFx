@@ -1,9 +1,13 @@
 package com.veterinaria.model;
+import com.veterinaria.utils.Datas;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -13,11 +17,14 @@ import java.util.UUID;
 
 @SQLDelete(sql = "UPDATE pets Set ativo = false WHERE id = ? AND versao = ?")
 @SQLRestriction("ativo=true")
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity(name = "pets")
 public class Pet{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @EqualsAndHashCode.Include
     private UUID id;
 
     @NotBlank(message = "O nome é obrigatório")
@@ -53,13 +60,6 @@ public class Pet{
     }
     public Pet(){}
 
-    public int getIdade(){
-        if (this.dataNascimento == null) return 0;
-        LocalDate dataAtual = LocalDate.now();
-        Period periodo = Period.between(this.dataNascimento, dataAtual);
-        return periodo.getYears();
-    }
-
     public void serBanhado(){
             System.out.println("Banho tomado");
     }
@@ -87,7 +87,7 @@ public class Pet{
     public String exibePet(){
         return "Nome: " + getNome() +
         //System.out.printf("Peso: %.2f\n", getPeso());
-        "\nIdade: " + getIdade() +
+        "\nIdade: " + Datas.idade(this.getDataNascimento()) +
         //System.out.printf("Altura: %.2f\n", getAltura());
         "\nSexo: " + getGenero() +
         //System.out.println("Especie: " + getEspecie());

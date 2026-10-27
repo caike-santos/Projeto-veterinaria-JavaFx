@@ -4,22 +4,29 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity(name = "agendas")
 @SQLDelete(sql = "UPDATE agendas Set ativo = false WHERE id = ? AND versao = ?")
 @SQLRestriction("ativo=true")
 public class Agenda {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
+	@EqualsAndHashCode.Include
 	private UUID id;
 
 	@Column(nullable = false)
@@ -50,6 +57,9 @@ public class Agenda {
 	@NotNull(message = "O funcionario é obrigatório")
 	private Funcionario funcionario;
 
+	@NotNull(message = "O valor é obrigatório")
+	private BigDecimal valor;
+
 	private boolean ativo = true;
 	@Version
 	private Long versao;
@@ -61,6 +71,7 @@ public class Agenda {
 		this.pet = pet;
 		this.servico = servico;
 		this.funcionario = funcionario;
+		this.valor = servico.getPreco();
 	}
 
 	public Agenda(){}

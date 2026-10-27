@@ -8,16 +8,15 @@ import com.veterinaria.App;
 import com.veterinaria.model.Atendente;
 import com.veterinaria.model.Funcionario;
 import com.veterinaria.service.FuncionarioService;
-import jakarta.validation.ConstraintViolationException;
+import com.veterinaria.utils.Acoes;
+import com.veterinaria.utils.Alertas;
+import com.veterinaria.utils.Componentes;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import lombok.Getter;
@@ -32,17 +31,7 @@ public class Login {
     private static Atendente atendente;
 
     public static Parent criarCena() {
-
-        Image logo = new Image(Login.class.getResource("/imagens/pet.png").toExternalForm());
-        ImageView mostarLogo = new ImageView(logo);
-        mostarLogo.setFitHeight(60);
-        mostarLogo.setPreserveRatio(true);
-
-        Label lblTitulo = new Label("Login do Atendente");
-        lblTitulo.getStyleClass().add("titulo");
-
-        HBox linhaHeader = new HBox(10);
-        linhaHeader.getChildren().addAll(mostarLogo, lblTitulo);
+        HBox linhaHeader = Componentes.header("Login do Atendente");
 
         Label lblUsuario = new Label("Usuario:");
         TextField txtUsuario = new TextField();
@@ -62,6 +51,7 @@ public class Login {
         txtSenha.clear();
 
         Button btnLogar = new Button("Entrar");
+        btnLogar.setDefaultButton(true);
 
         HBox linhaBtn = new HBox(10);
         linhaBtn.getChildren().addAll(btnLogar);
@@ -72,28 +62,21 @@ public class Login {
         vertical.getChildren().addAll(linhaHeader, linhaUsuario, linhaSenha, linhaBtn);
         vertical.setAlignment(Pos.CENTER);
 
-        btnLogar.setOnAction(evento -> {
-            try {
-                String nome = txtUsuario.getText();
-                String senha = txtSenha.getText();
+        btnLogar.setOnAction(evento -> Acoes.executar(() -> {
+            String nome = txtUsuario.getText();
+            String senha = txtSenha.getText();
 
-                FuncionarioService funcionarioService = App.getBean(FuncionarioService.class);
+            FuncionarioService funcionarioService = App.getBean(FuncionarioService.class);
 
-                Funcionario funcionario = funcionarioService.login(nome, senha);
-                if (funcionario instanceof Atendente atendenteLogado) {
-                    atendente = atendenteLogado;
-                    log.info("Atendente {} logado(a)", atendente.getNome());
-                    App.inserirCena(Home.criarCena(atendenteLogado));
-                }else{
-                    EditarCliente.mostarNaTela("Espere", "Suas telas ainda não foram criadas");
-                    return;
-                }
-            } catch (IllegalArgumentException | ConstraintViolationException e) {
-                log.warn("Erro de validação: {}", e.getMessage());
-            } catch (Exception e) {
-                log.error("Erro inesperado:", e);
+            Funcionario funcionario = funcionarioService.login(nome, senha);
+            if (funcionario instanceof Atendente atendenteLogado) {
+                atendente = atendenteLogado;
+                log.info("Atendente {} logado(a)", atendente.getNome());
+                App.inserirCena(Home.criarCena(atendenteLogado));
+            } else {
+                Alertas.info("Espere", "Suas telas ainda não foram criadas");
             }
-        });
+        }));
 
         return vertical;
     }
